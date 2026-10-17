@@ -8,35 +8,68 @@ env/
 ENV/
 .venv/
 
-# Python Bytecode & Cache
+# Python Bytecode and Cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# IDE / Editor
+# IDE and Editor
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 
-# User Uploaded Evidence Files (Keep directory structure)
-uploads/*
-!uploads/.gitkeep
+# Environment Variables and Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
 
-# Generated PDF Reports (Keep directory structure)
-reports/*
-!reports/.gitkeep
+# Uploaded Evidence - Sensitive Files
+/uploads/
+/uploads/*
+!/uploads/.gitkeep
+
+# Generated Reports
+/reports/
+/reports/*
+!/reports/.gitkeep
 
 # Runtime Logs
-logs/*
-!logs/.gitkeep
+/logs/
+/logs/*
+!/logs/.gitkeep
 *.log
 
-# Sensitive Files / Local Configurations
-.env
-*.env.local
+# AI Model Files
+*.pt
+*.pth
+*.onnx
+*.engine
+*.weights
+
+# Sample or Test Evidence
+EvidenceAI_Sample_Evidence.pdf
+EvidenceAI_Faulty_Statement_Test.pdf
+EvidenceAI_Police_Theft_Evidence_Test.pdf
+
+# Local Database Backups and Dumps
+*.sql.bak
+*.dump
+*.sqlite
+*.sqlite3
+
+# Temporary and Scratch Files
+scratch/
+*.tmp
+*.bak
+*.swp
+*.swo
 
 # Operating System Files
 Thumbs.db
@@ -45,19 +78,17 @@ Desktop.ini
 $RECYCLE.BIN/
 .DS_Store
 
-# Temporary / Scratch Files
-scratch/
-*.tmp
-*.bak
-
-# EvidenceAI local test files
-EvidenceAI_Sample_Evidence.pdf
-GitHub/
+# Local Installers and Downloads
 GitHubDesktopSetup-x64.exe
 
-# AI model files
-*.pt
+# Local GitHub Folder
+/GitHub/
 
-# Other local configuration files
-.env.*
-!.env.example
+# Build and Distribution Files
+build/
+dist/
+*.egg-info/
+
+# Test and Coverage Output
+.coverage
+htmlcov/
