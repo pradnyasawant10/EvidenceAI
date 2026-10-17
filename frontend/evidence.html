@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evidence Management - EvidenceAI</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/evidence.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="top-header">
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <span>EvidenceAI</span>
+        </div>
+
+        <nav class="main-nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="cases.html">Cases</a>
+            <a href="evidence.html" class="active">Evidence</a>
+            <a href="ai-analysis.html">AI Analysis</a>
+            <a href="search.html">Search Evidence</a>
+            <a href="reports.html">Reports</a>
+            <a href="activity-logs.html">Activity Logs</a>
+            <a href="users.html">Users</a>
+            <a href="settings.html">Settings</a>
+        </nav>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="evidence-container">
+
+        <!-- Page Heading -->
+        <div class="page-heading">
+            <div>
+                <h1>Evidence Management</h1>
+                <p>Upload, manage and track digital evidence securely.</p>
+            </div>
+
+            <button class="add-evidence-btn" onclick="openUploadModal()">
+                + Upload Evidence
+            </button>
+        </div>
+
+
+        <!-- Statistics -->
+        <section class="evidence-stats">
+
+            <div class="stat-card">
+                <div class="stat-icon">📁</div>
+                <div>
+                    <h3 id="totalEvidence">0</h3>
+                    <p>Total Evidence</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🖼️</div>
+                <div>
+                    <h3 id="imageEvidence">0</h3>
+                    <p>Images</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎥</div>
+                <div>
+                    <h3 id="videoEvidence">0</h3>
+                    <p>Videos</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div>
+                    <h3 id="documentEvidence">0</h3>
+                    <p>Documents</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Search and Filter -->
+        <section class="evidence-controls">
+
+            <input
+                type="text"
+                id="searchEvidence"
+                placeholder="Search evidence..."
+                onkeyup="searchEvidence()"
+            >
+
+            <select id="caseFilter" onchange="filterEvidence()">
+                <option value="">All Cases</option>
+            </select>
+
+            <select id="typeFilter" onchange="filterEvidence()">
+                <option value="">All Types</option>
+                <option value="Image">Image</option>
+                <option value="Video">Video</option>
+                <option value="Audio">Audio</option>
+                <option value="Document">Document</option>
+                <option value="Other">Other</option>
+            </select>
+
+        </section>
+
+
+        <!-- Evidence Table -->
+        <section class="evidence-table-card">
+
+            <div class="table-header">
+                <div>
+                    <h2>Digital Evidence</h2>
+                    <p>All uploaded evidence associated with cases.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Evidence No.</th>
+                            <th>Case</th>
+                            <th>Type</th>
+                            <th>File Name</th>
+                            <th>Uploaded By</th>
+                            <th>Uploaded At</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="evidenceTableBody">
+
+                        <tr>
+                            <td colspan="8" class="empty-message">
+                                No evidence available.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Upload Evidence Modal -->
+    <div id="uploadModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <div>
+                    <h2>Upload Evidence</h2>
+                    <p>Add digital evidence to a case.</p>
+                </div>
+
+                <button class="close-btn" onclick="closeUploadModal()">
+                    &times;
+                </button>
+            </div>
+
+            <div id="evidenceMessage" style="min-height: 20px; font-weight: 600; padding: 10px 14px; margin-bottom: 12px; display: none; border-radius: 6px;"></div>
+
+            <form id="evidenceForm">
+
+                <!-- Case -->
+                <div class="form-group">
+
+                    <label for="evidenceCase">
+                        Select Case <span>*</span>
+                    </label>
+
+                    <select id="evidenceCase" required>
+                        <option value="">Select Case</option>
+                    </select>
+
+                </div>
+
+
+                <!-- Evidence Number -->
+                <div class="form-group">
+
+                    <label for="evidenceNumber">
+                        Evidence Number <span>*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="evidenceNumber"
+                        placeholder="Example: EVD001"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Evidence Type -->
+                <div class="form-group">
+
+                    <label for="evidenceType">
+                        Evidence Type <span>*</span>
+                    </label>
+
+                    <select id="evidenceType" required>
+
+                        <option value="">
+                            Select Evidence Type
+                        </option>
+
+                        <option value="Image">
+                            Image
+                        </option>
+
+                        <option value="Video">
+                            Video
+                        </option>
+
+                        <option value="Audio">
+                            Audio
+                        </option>
+
+                        <option value="Document">
+                            Document
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- File -->
+                <div class="form-group">
+
+                    <label for="evidenceFile">
+                        Evidence File <span>*</span>
+                    </label>
+
+                    <input
+                        type="file"
+                        id="evidenceFile"
+                        required
+                    >
+
+                    <small>
+                        Supported: Images, Videos, Audio and Documents
+                    </small>
+
+                </div>
+
+
+                <!-- Description -->
+                <div class="form-group">
+
+                    <label for="evidenceDescription">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="evidenceDescription"
+                        rows="4"
+                        placeholder="Enter evidence description..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeUploadModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Upload Evidence
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Evidence Details Modal -->
+    <div id="detailsModal" class="modal">
+
+        <div class="modal-content details-modal">
+
+            <div class="modal-header">
+
+                <div>
+                    <h2>Evidence Details</h2>
+                    <p>Information about selected evidence.</p>
+                </div>
+
+                <button
+                    class="close-btn"
+                    onclick="closeDetailsModal()"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <div class="details-content">
+
+                <div class="detail-row">
+                    <strong>Evidence Number:</strong>
+                    <span id="detailEvidenceNumber">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Case:</strong>
+                    <span id="detailCase">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Evidence Type:</strong>
+                    <span id="detailType">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>File Name:</strong>
+                    <span id="detailFileName">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Uploaded By:</strong>
+                    <span id="detailUploadedBy">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Uploaded At:</strong>
+                    <span id="detailUploadedAt">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>Status:</strong>
+                    <span id="detailStatus">-</span>
+                </div>
+
+                <div class="detail-row">
+                    <strong>SHA-256 Hash:</strong>
+                    <span id="detailFileHash" style="font-family: monospace; font-size: 11px; word-break: break-all; color: #1e3a8a;">-</span>
+                </div>
+
+                <div class="detail-description">
+
+                    <strong>Description:</strong>
+
+                    <p id="detailDescription">
+                        No description available.
+                    </p>
+
+                </div>
+
+                <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" id="btnVerifyIntegrity" class="save-btn" style="background: #0284c7; padding: 9px 15px; border-radius: 7px; color: white; border: none; cursor: pointer;">
+                        Verify Integrity 🔍
+                    </button>
+                    <button type="button" id="btnAiAnalyze" class="save-btn" style="background: #7c3aed; padding: 9px 15px; border-radius: 7px; color: white; border: none; cursor: pointer;">
+                        Run AI Analysis 🤖
+                    </button>
+                    <button type="button" id="btnOpenFile" class="save-btn" style="background: #059669; padding: 9px 15px; border-radius: 7px; color: white; border: none; cursor: pointer;">
+                        Open File ⬇️
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeDetailsModal()" style="padding: 9px 15px; border-radius: 7px; background: #e5e7eb; border: none; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/auth.js"></script>
+    <script src="js/role-guard.js"></script>
+    <script src="js/evidence.js"></script>
+
+</body>
+</html>

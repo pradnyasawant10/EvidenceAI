@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Reports - EvidenceAI</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/reports.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="top-header">
+
+
+        <div class="logo">
+
+            <span class="logo-icon">
+                🛡️
+            </span>
+
+            <span>
+                EvidenceAI
+            </span>
+
+        </div>
+
+
+        <nav class="main-nav">
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="cases.html">
+                Cases
+            </a>
+
+            <a href="evidence.html">
+                Evidence
+            </a>
+
+            <a href="ai-analysis.html">
+                AI Analysis
+            </a>
+
+            <a href="search.html">
+                Search Evidence
+            </a>
+
+            <a
+                href="reports.html"
+                class="active"
+            >
+                Reports
+            </a>
+
+            <a href="activity-logs.html">
+                Activity Logs
+            </a>
+
+            <a href="users.html">
+                Users
+            </a>
+
+            <a href="settings.html">
+                Settings
+            </a>
+
+        </nav>
+
+
+        <button
+            class="logout-btn"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="reports-container">
+
+
+        <!-- PAGE HEADING -->
+
+        <div class="page-heading">
+
+
+            <div>
+
+                <h1>
+                    Reports
+                </h1>
+
+                <p>
+                    Generate and manage investigation reports.
+                </p>
+
+            </div>
+
+
+            <button
+                class="generate-report-btn"
+                onclick="openReportModal()"
+            >
+                + Generate Report
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="report-stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📄
+                </div>
+
+                <div>
+
+                    <h3 id="totalReports">
+                        0
+                    </h3>
+
+                    <p>
+                        Total Reports
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ✅
+                </div>
+
+                <div>
+
+                    <h3 id="generatedReports">
+                        0
+                    </h3>
+
+                    <p>
+                        Generated
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📝
+                </div>
+
+                <div>
+
+                    <h3 id="draftReports">
+                        0
+                    </h3>
+
+                    <p>
+                        Drafts
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🗄️
+                </div>
+
+                <div>
+
+                    <h3 id="archivedReports">
+                        0
+                    </h3>
+
+                    <p>
+                        Archived
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             SEARCH / FILTER
+        ================================================== -->
+
+        <section class="report-controls">
+
+
+            <input
+                type="text"
+                id="searchReport"
+                placeholder="Search reports..."
+                onkeyup="searchReports()"
+            >
+
+
+            <select
+                id="reportTypeFilter"
+                onchange="filterReports()"
+            >
+
+                <option value="">
+                    All Report Types
+                </option>
+
+                <option value="Case Report">
+                    Case Report
+                </option>
+
+                <option value="Evidence Report">
+                    Evidence Report
+                </option>
+
+                <option value="AI Analysis Report">
+                    AI Analysis Report
+                </option>
+
+                <option value="Final Report">
+                    Final Report
+                </option>
+
+            </select>
+
+
+            <select
+                id="reportStatusFilter"
+                onchange="filterReports()"
+            >
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="Generated">
+                    Generated
+                </option>
+
+                <option value="Draft">
+                    Draft
+                </option>
+
+                <option value="Archived">
+                    Archived
+                </option>
+
+            </select>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             REPORT TABLE
+        ================================================== -->
+
+        <section class="reports-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <h2>
+                        Investigation Reports
+                    </h2>
+
+                    <p>
+                        Reports generated for registered cases.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Report
+                            </th>
+
+                            <th>
+                                Case
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                File
+                            </th>
+
+                            <th>
+                                Generated By
+                            </th>
+
+                            <th>
+                                Generated At
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <tbody id="reportTableBody">
+
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="empty-message"
+                            >
+                                No reports available.
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         GENERATE REPORT MODAL
+    ====================================================== -->
+
+    <div
+        id="reportModal"
+        class="modal"
+    >
+
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2>
+                        Generate Report
+                    </h2>
+
+                    <p>
+                        Create a report for a selected case.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="close-btn"
+                    onclick="closeReportModal()"
+                >
+                    &times;
+                </button>
+
+
+            </div>
+
+
+
+            <form id="reportForm">
+
+
+                <!-- CASE -->
+
+                <div class="form-group">
+
+
+                    <label for="reportCase">
+
+                        Select Case
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <select
+                        id="reportCase"
+                        required
+                    >
+
+                        <option value="">
+                            Select Case
+                        </option>
+
+                    </select>
+
+
+                </div>
+
+
+
+                <!-- REPORT TITLE -->
+
+                <div class="form-group">
+
+
+                    <label for="reportTitle">
+
+                        Report Title
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="reportTitle"
+                        placeholder="Example: Case Investigation Report"
+                        required
+                    >
+
+
+                </div>
+
+
+
+                <!-- REPORT TYPE -->
+
+                <div class="form-group">
+
+
+                    <label for="reportType">
+
+                        Report Type
+
+                        <span>
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <select
+                        id="reportType"
+                        required
+                    >
+
+                        <option value="">
+                            Select Report Type
+                        </option>
+
+                        <option value="Case Report">
+                            Case Report
+                        </option>
+
+                        <option value="Evidence Report">
+                            Evidence Report
+                        </option>
+
+                        <option value="AI Analysis Report">
+                            AI Analysis Report
+                        </option>
+
+                        <option value="Final Report">
+                            Final Report
+                        </option>
+
+                    </select>
+
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group">
+
+
+                    <label for="reportDescription">
+
+                        Report Description
+
+                    </label>
+
+
+                    <textarea
+                        id="reportDescription"
+                        rows="5"
+                        placeholder="Enter report description..."
+                    ></textarea>
+
+
+                </div>
+
+
+
+                <!-- BUTTONS -->
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeReportModal()"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Generate Report
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         REPORT DETAILS MODAL
+    ====================================================== -->
+
+    <div
+        id="detailsModal"
+        class="modal"
+    >
+
+
+        <div class="modal-content details-modal">
+
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2>
+                        Report Details
+                    </h2>
+
+                    <p>
+                        Information about the selected report.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="close-btn"
+                    onclick="closeDetailsModal()"
+                >
+                    &times;
+                </button>
+
+
+            </div>
+
+
+
+            <div class="details-content">
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Report Title:
+                    </strong>
+
+                    <span id="detailReportTitle">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Case:
+                    </strong>
+
+                    <span id="detailCase">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Report Type:
+                    </strong>
+
+                    <span id="detailReportType">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        File Name:
+                    </strong>
+
+                    <span id="detailFileName">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Generated By:
+                    </strong>
+
+                    <span id="detailGeneratedBy">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Generated At:
+                    </strong>
+
+                    <span id="detailGeneratedAt">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Status:
+                    </strong>
+
+                    <span id="detailStatus">
+                        -
+                    </span>
+
+                </div>
+
+
+
+                <div class="detail-description">
+
+                    <strong>
+                        Description:
+                    </strong>
+
+                    <p id="detailDescription">
+                        No description available.
+                    </p>
+
+                </div>
+
+                <div class="modal-actions" style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" id="btnDownloadReportPdf" class="save-btn" style="background: #2563eb; color: white; padding: 9px 16px; border: none; border-radius: 7px; cursor: pointer;">
+                        Download / View PDF 📄
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeDetailsModal()" style="padding: 9px 16px; border: none; border-radius: 7px; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script src="js/auth.js"></script>
+    <script src="js/role-guard.js"></script>
+    <script src="js/reports.js"></script>
+
+
+</body>
+
+</html>

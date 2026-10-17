@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EvidenceAI - Search Evidence</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        /* HEADER */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+            color: #111827;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #111827;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        /* SEARCH CARD */
+
+        .search-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .search-card h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 20px;
+        }
+
+        .search-row {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        #searchInput {
+            flex: 1;
+            height: 50px;
+            padding: 0 15px;
+
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+
+            background: white;
+            color: #111827;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: #2563eb;
+        }
+
+        .search-btn {
+            height: 50px;
+            padding: 0 25px;
+
+            background: #2563eb;
+            color: white;
+
+            border: none;
+            border-radius: 7px;
+
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .clear-btn {
+            height: 50px;
+            padding: 0 22px;
+
+            background: #e5e7eb;
+            color: #374151;
+
+            border: none;
+            border-radius: 7px;
+
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        /* FILTERS */
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .filters select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+        }
+
+        /* ERROR */
+
+        #errorMessage {
+            display: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 7px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* RESULTS */
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .result-header h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        #resultCount {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+
+            border-radius: 10px;
+
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+        }
+
+        .result-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .evidence-number {
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .badge {
+            background: #eef2ff;
+            color: #4338ca;
+
+            padding: 5px 10px;
+            border-radius: 15px;
+
+            font-size: 12px;
+        }
+
+        .file-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .view-btn {
+            margin-top: 12px;
+
+            padding: 9px 16px;
+
+            border: none;
+            border-radius: 6px;
+
+            background: #111827;
+            color: white;
+
+            cursor: pointer;
+        }
+
+        .empty {
+            background: white;
+            padding: 45px;
+            text-align: center;
+
+            border-radius: 10px;
+
+            color: #6b7280;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-btn,
+            .clear-btn {
+                width: 100%;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                Search Evidence
+            </h1>
+
+            <p>
+                Search and find evidence from your investigation records.
+            </p>
+
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <a
+                href="evidence.html"
+                class="back-btn"
+                style="background: #2563eb;"
+            >
+                ← Evidence
+            </a>
+            <a
+                href="dashboard.html"
+                class="back-btn"
+            >
+                ← Dashboard
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-card">
+
+        <h2>
+            Evidence Search
+        </h2>
+
+
+        <div class="search-row">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search evidence number, file name, case number..."
+            >
+
+
+            <button
+                type="button"
+                class="search-btn"
+                onclick="searchEvidence()"
+            >
+                Search
+            </button>
+
+
+            <button
+                type="button"
+                class="clear-btn"
+                onclick="clearSearch()"
+            >
+                Clear
+            </button>
+
+        </div>
+
+
+        <!-- FILTERS -->
+
+        <div class="filters">
+
+            <select
+                id="typeFilter"
+                onchange="searchEvidence()"
+            >
+
+                <option value="">
+                    All Evidence Types
+                </option>
+
+                <option value="Image">
+                    Image
+                </option>
+
+                <option value="Video">
+                    Video
+                </option>
+
+                <option value="Audio">
+                    Audio
+                </option>
+
+                <option value="Document">
+                    Document
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+
+            <select
+                id="statusFilter"
+                onchange="searchEvidence()"
+            >
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Archived">
+                    Archived
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorMessage"
+    ></div>
+
+
+    <!-- RESULT HEADER -->
+
+    <div class="result-header">
+
+        <h2>
+            Search Results
+        </h2>
+
+        <span id="resultCount">
+            0 results
+        </span>
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    <div id="resultsContainer">
+
+        <div class="empty">
+
+            Enter a keyword and click Search.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/auth.js"></script>
+<script src="js/role-guard.js"></script>
+<script>
+
+var API_URL = window.API_URL || (window.location.origin.includes(":5000") ? window.location.origin : "http://127.0.0.1:5000");
+window.API_URL = API_URL;
+
+let allEvidence = [];
+
+
+// ============================================
+// LOAD PAGE
+// ============================================
+
+window.onload = function () {
+
+    console.log("Search page loaded.");
+
+    loadEvidence();
+
+    const searchInput = document.getElementById("searchInput");
+    if (searchInput) {
+        searchInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                searchEvidence();
+            }
+        });
+    }
+
+};
+
+
+// ============================================
+// LOAD EVIDENCE
+// ============================================
+
+async function loadEvidence() {
+
+    try {
+
+        const response =
+            await fetch(API_URL + "/evidence", {
+                method: "GET",
+                credentials: "include"
+            });
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server Error"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Evidence data:",
+            data
+        );
+
+
+        if (Array.isArray(data)) {
+
+            allEvidence = data;
+
+        }
+        else if (
+            data &&
+            Array.isArray(data.evidence)
+        ) {
+
+            allEvidence = data.evidence;
+
+        }
+        else if (
+            data &&
+            Array.isArray(data.data)
+        ) {
+
+            allEvidence = data.data;
+
+        }
+        else {
+
+            allEvidence = [];
+
+        }
+
+
+        /*
+         Show all evidence when
+         page loads
+        */
+
+        displayResults(
+            allEvidence
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Error:",
+            error
+        );
+
+
+        document.getElementById(
+            "errorMessage"
+        ).style.display = "block";
+
+
+        document.getElementById(
+            "errorMessage"
+        ).innerText =
+            "Unable to connect to EvidenceAI backend. Make sure Flask and MySQL are running.";
+
+
+    }
+
+}
+
+
+// ============================================
+// SEARCH
+// ============================================
+
+function searchEvidence() {
+
+    console.log(
+        "SEARCH CLICKED"
+    );
+
+
+    const keyword =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const selectedType =
+        document.getElementById(
+            "typeFilter"
+        ).value;
+
+
+    const selectedStatus =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    let results =
+        allEvidence;
+
+
+    // KEYWORD
+
+    if (keyword !== "") {
+
+        results =
+            results.filter(function(item) {
+
+                return (
+
+                    String(
+                        item.evidence_number || ""
+                    )
+                    .toLowerCase()
+                    .includes(keyword)
+
+
+                    ||
+
+                    String(
+                        item.file_name || ""
+                    )
+                    .toLowerCase()
+                    .includes(keyword)
+
+
+                    ||
+
+                    String(
+                        item.case_number || ""
+                    )
+                    .toLowerCase()
+                    .includes(keyword)
+
+
+                    ||
+
+                    String(
+                        item.case_title || ""
+                    )
+                    .toLowerCase()
+                    .includes(keyword)
+
+
+                    ||
+
+                    String(
+                        item.description || ""
+                    )
+                    .toLowerCase()
+                    .includes(keyword)
+
+                );
+
+            });
+
+    }
+
+
+    // TYPE
+
+    if (selectedType !== "") {
+
+        results =
+            results.filter(function(item) {
+
+                return String(
+                    item.evidence_type || ""
+                ) === selectedType;
+
+            });
+
+    }
+
+
+    // STATUS
+
+    if (selectedStatus !== "") {
+
+        results =
+            results.filter(function(item) {
+
+                return String(
+                    item.status || ""
+                ) === selectedStatus;
+
+            });
+
+    }
+
+
+    displayResults(
+        results
+    );
+
+}
+
+
+// ============================================
+// DISPLAY RESULTS
+// ============================================
+
+function displayResults(results) {
+
+    const container =
+        document.getElementById(
+            "resultsContainer"
+        );
+
+
+    const count =
+        document.getElementById(
+            "resultCount"
+        );
+
+
+    count.innerText =
+        results.length +
+        (
+            results.length === 1
+                ? " result"
+                : " results"
+        );
+
+
+    if (results.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No matching evidence found.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    results.forEach(function(item) {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "result-card";
+
+
+        card.innerHTML = `
+
+            <div class="result-top">
+
+                <span class="evidence-number">
+
+                    Evidence No:
+                    ${safe(item.evidence_number)}
+
+                </span>
+
+
+                <span class="badge">
+
+                    ${safe(item.evidence_type)}
+
+                </span>
+
+            </div>
+
+
+            <div class="file-name">
+
+                ${safe(item.file_name)}
+
+            </div>
+
+
+            <div class="info">
+
+                <b>Case:</b>
+
+                ${safe(item.case_number)}
+
+                -
+
+                ${safe(item.case_title)}
+
+                <br>
+
+
+                <b>Status:</b>
+
+                ${safe(item.status)}
+
+                <br>
+
+
+                <b>Description:</b>
+
+                ${safe(
+                    item.description ||
+                    "No description available"
+                )}
+
+            </div>
+
+
+            <button
+                type="button"
+                class="view-btn"
+                onclick="viewEvidence(${item.evidence_id})"
+            >
+
+                View Evidence
+
+            </button>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+// ============================================
+// VIEW EVIDENCE
+// ============================================
+
+function viewEvidence(id) {
+
+    const item =
+        allEvidence.find(
+            function(e) {
+
+                return Number(
+                    e.evidence_id
+                ) === Number(id);
+
+            }
+        );
+
+
+    if (!item) {
+
+        alert(
+            "Evidence not found."
+        );
+
+        return;
+
+    }
+
+
+    alert(
+
+        "Evidence Number: " +
+        (item.evidence_number || "N/A") +
+
+        "\n\nFile Name: " +
+        (item.file_name || "N/A") +
+
+        "\n\nEvidence Type: " +
+        (item.evidence_type || "N/A") +
+
+        "\n\nCase: " +
+        (item.case_number || "N/A") +
+
+        "\n\nStatus: " +
+        (item.status || "N/A") +
+
+        "\n\nDescription: " +
+        (
+            item.description ||
+            "No description"
+        )
+
+    );
+
+
+    if (item.file_path) {
+
+        const fileName =
+            item.file_path
+            .split("/")
+            .pop();
+
+
+        window.open(
+            API_URL +
+            "/evidence/file/" +
+            encodeURIComponent(
+                fileName
+            ),
+            "_blank"
+        );
+
+    }
+
+}
+
+
+// ============================================
+// CLEAR
+// ============================================
+
+function clearSearch() {
+
+    document.getElementById(
+        "searchInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "typeFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "statusFilter"
+    ).value = "";
+
+
+    displayResults(
+        allEvidence
+    );
+
+}
+
+
+// ============================================
+// SAFE TEXT
+// ============================================
+
+function safe(value) {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+
+        return "N/A";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>

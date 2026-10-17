@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EvidenceAI - Dashboard</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .stat-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        .panel-header button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header class="top-navbar">
+
+        <div class="logo">
+            <a href="dashboard.html">🛡 EvidenceAI</a>
+        </div>
+
+        <nav class="top-nav">
+
+            <a href="dashboard.html" class="active">Dashboard</a>
+
+            <a href="cases.html">Cases</a>
+
+            <a href="evidence.html">Evidence</a>
+
+            <a href="ai-analysis.html">AI Analysis</a>
+
+            <a href="search.html">Search Evidence</a>
+
+            <a href="reports.html">Reports</a>
+
+            <a href="activity-logs.html">Activity Logs</a>
+
+            <a href="users.html">Users</a>
+
+            <a href="settings.html">Settings</a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-logo">
+            🛡️ EvidenceAI
+        </div>
+
+        <nav>
+
+            <a href="dashboard.html" class="active">
+                Dashboard
+            </a>
+
+            <a href="cases.html">
+                Cases
+            </a>
+
+            <a href="evidence.html">
+                Evidence
+            </a>
+
+            <a href="ai-analysis.html">
+                AI Analysis
+            </a>
+
+            <a href="search.html">
+                Search Evidence
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+            <a href="activity-logs.html">
+                Activity Logs
+            </a>
+
+            <a href="users.html">
+                Users
+            </a>
+
+            <a href="settings.html">
+                Settings
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="storage">
+                <strong>Current Officer</strong>
+                <p class="current-user-name">Loading...</p>
+                <small class="current-user-role">Officer</small>
+            </div>
+
+            <button onclick="logout()">
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="main-content">
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+
+            <div>
+                <h1 id="welcomeTitle">Welcome back, <span class="current-user-name">Officer</span>! 👋</h1>
+
+                <p>
+                    Here's what's happening with your cases and evidence today.
+                </p>
+            </div>
+
+            <div class="date-box" id="currentDateBox">
+                📅 Today
+            </div>
+
+        </section>
+
+
+        <!-- ================= STATISTICS ================= -->
+        <section class="stats-grid">
+
+            <div class="stat-card blue" onclick="window.location.href='cases.html'">
+                <div class="stat-icon">📁</div>
+
+                <div>
+                    <span>Total Cases</span>
+                    <h2 id="totalCases">0</h2>
+                    <a href="cases.html">View all cases →</a>
+                </div>
+            </div>
+
+
+            <div class="stat-card green" onclick="window.location.href='evidence.html'">
+                <div class="stat-icon">📄</div>
+
+                <div>
+                    <span>Total Evidence</span>
+                    <h2 id="totalEvidence">0</h2>
+                    <a href="evidence.html">View all evidence →</a>
+                </div>
+            </div>
+
+
+            <div class="stat-card purple" onclick="window.location.href='ai-analysis.html'">
+                <div class="stat-icon">🤖</div>
+
+                <div>
+                    <span>AI Analyses</span>
+                    <h2 id="totalAnalyses">0</h2>
+                    <a href="ai-analysis.html">View all analyses →</a>
+                </div>
+            </div>
+
+
+            <div class="stat-card orange" onclick="window.location.href='reports.html'">
+                <div class="stat-icon">📑</div>
+
+                <div>
+                    <span>Reports Generated</span>
+                    <h2 id="totalReports">0</h2>
+                    <a href="reports.html">View all reports →</a>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= RECENT SECTION ================= -->
+        <section class="two-column">
+
+            <!-- Recent Cases -->
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h2>Recent Cases</h2>
+                    <button onclick="window.location.href='cases.html'">View all</button>
+                </div>
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Case No.</th>
+                                <th>Title</th>
+                                <th>Crime Type</th>
+                                <th>Status</th>
+                                <th>Updated</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="recentCasesBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #6b7280; padding: 15px;">Loading cases...</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recent Evidence -->
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h2>Recent Evidence</h2>
+                    <button onclick="window.location.href='evidence.html'">View all</button>
+                </div>
+
+                <div class="evidence-list" id="recentEvidenceList">
+                    <div style="text-align: center; color: #6b7280; padding: 15px;">Loading evidence...</div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= LOWER SECTION ================= -->
+        <section class="two-column">
+
+            <!-- Case Overview -->
+            <div class="panel overview-panel">
+
+                <div class="panel-header">
+                    <h2>Case Overview</h2>
+                </div>
+
+                <div class="overview-content">
+
+                    <div class="donut">
+                        <div>
+                            <strong id="overviewTotalCases">0</strong>
+                            <small>Total</small>
+                        </div>
+                    </div>
+
+                    <div class="overview-list">
+
+                        <div>
+                            <span class="dot green-dot"></span>
+                            Open
+                            <strong id="overviewOpenCases">0</strong>
+                        </div>
+
+                        <div>
+                            <span class="dot blue-dot"></span>
+                            Under Investigation
+                            <strong id="overviewInvestigatingCases">0</strong>
+                        </div>
+
+                        <div>
+                            <span class="dot orange-dot"></span>
+                            Closed
+                            <strong id="overviewClosedCases">0</strong>
+                        </div>
+
+                        <div>
+                            <span class="dot gray-dot"></span>
+                            Other
+                            <strong id="overviewOtherCases">0</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recent Activity -->
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h2>Recent Activity</h2>
+                    <button onclick="window.location.href='activity-logs.html'">View all</button>
+                </div>
+
+                <div class="activity-list" id="recentActivityList">
+                    <div style="text-align: center; color: #6b7280; padding: 15px;">Loading activity...</div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= AI SUMMARY ================= -->
+        <section class="panel ai-summary">
+
+            <div class="panel-header">
+                <h2>AI Analysis Summary</h2>
+                <button onclick="window.location.href='ai-analysis.html'">View all</button>
+            </div>
+
+            <div class="ai-grid">
+
+                <div class="ai-card" onclick="window.location.href='ai-analysis.html'" style="cursor: pointer;">
+                    <span>Objects Detected</span>
+                    <strong id="aiObjectsCount">0</strong>
+                </div>
+
+                <div class="ai-card" onclick="window.location.href='ai-analysis.html'" style="cursor: pointer;">
+                    <span>OCR Extractions</span>
+                    <strong id="aiOcrCount">0</strong>
+                </div>
+
+                <div class="ai-card" onclick="window.location.href='ai-analysis.html'" style="cursor: pointer;">
+                    <span>Transcriptions</span>
+                    <strong id="aiTranscriptionsCount">0</strong>
+                </div>
+
+                <div class="ai-card" onclick="window.location.href='ai-analysis.html'" style="cursor: pointer;">
+                    <span>Face Detections</span>
+                    <strong id="aiFacesCount">0</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+        <footer>
+            © 2026 EvidenceAI. All rights reserved.
+        </footer>
+
+    </main>
+
+
+    <!-- JavaScript -->
+    <script src="js/auth.js"></script>
+    <script src="js/role-guard.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

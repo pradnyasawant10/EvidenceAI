@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Users - EvidenceAI</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+
+        .page {
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+            color: #111827;
+        }
+
+
+        .header p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        .back-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .btn-add-user {
+            text-decoration: none;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add-user:hover {
+            background: #1d4ed8;
+        }
+
+        .delete-user-btn {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .delete-user-btn:hover {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #111827;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #6b7280;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+            color: #111827;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #2563eb;
+        }
+
+        .modal-footer {
+            padding: 14px 24px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f9fafb;
+        }
+
+        .btn-cancel {
+            background: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-submit {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+
+        .stat-title {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+
+        /* =========================================
+           FILTER CARD
+        ========================================= */
+
+        .filter-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+        }
+
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+
+        #searchInput {
+            flex: 1;
+            min-width: 260px;
+            height: 44px;
+
+            padding: 0 14px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+
+            outline: none;
+            background: white;
+            color: #111827;
+        }
+
+
+        #searchInput:focus {
+            border-color: #2563eb;
+        }
+
+
+        .filter-select {
+            height: 44px;
+            min-width: 180px;
+
+            padding: 0 12px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+
+            background: white;
+            color: #111827;
+        }
+
+
+        .clear-btn {
+            height: 44px;
+
+            padding: 0 18px;
+
+            border: none;
+            border-radius: 7px;
+
+            background: #e5e7eb;
+            color: #374151;
+
+            cursor: pointer;
+        }
+
+
+        .clear-btn:hover {
+            background: #d1d5db;
+        }
+
+
+        /* =========================================
+           ERROR
+        ========================================= */
+
+        .error-message {
+            display: none;
+
+            background: #fee2e2;
+            color: #991b1b;
+
+            padding: 14px;
+            margin-bottom: 20px;
+
+            border-radius: 7px;
+        }
+
+
+        /* =========================================
+           USERS HEADER
+        ========================================= */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 15px;
+        }
+
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+
+        #resultCount {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           USERS CONTAINER
+        ========================================= */
+
+        #usersContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+
+        /* =========================================
+           USER CARD
+        ========================================= */
+
+        .user-card {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.05);
+        }
+
+
+        .user-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 15px;
+        }
+
+
+        .user-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+
+            border-radius: 50%;
+
+            background: #2563eb;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+
+        .user-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+
+        .user-email {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+
+        .role-badge, .role-badge-btn {
+            padding: 6px 12px;
+            border-radius: 15px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #c7d2fe;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .role-badge-btn:hover {
+            background: #e0e7ff;
+            border-color: #818cf8;
+            transform: translateY(-1px);
+        }
+
+        .status-badge, .status-badge-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 8px;
+            padding: 6px 13px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .status-badge-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+            border-color: #86efac;
+        }
+
+        .status-active:hover {
+            background: #bbf7d0;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+
+        .status-inactive:hover {
+            background: #fecaca;
+        }
+
+
+        .user-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+
+            padding-top: 14px;
+
+            border-top: 1px solid #eef2f7;
+
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+
+        .user-info strong {
+            color: #374151;
+        }
+
+
+        .empty {
+            background: white;
+
+            padding: 50px 20px;
+
+            text-align: center;
+
+            border-radius: 10px;
+
+            color: #6b7280;
+        }
+
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 20px;
+            }
+
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+
+            #searchInput,
+            .filter-select,
+            .clear-btn {
+                width: 100%;
+            }
+
+
+            .user-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                User Management
+            </h1>
+
+            <p>
+                View registered EvidenceAI users and their roles.
+            </p>
+
+        </div>
+
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button
+                type="button"
+                class="btn-add-user"
+                onclick="openAddUserModal()"
+            >
+                + Add User
+            </button>
+            <a
+                href="dashboard.html"
+                class="back-btn"
+            >
+                ← Dashboard
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         STATS
+    ========================================== -->
+
+    <div class="stats">
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Total Users
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Administrators
+            </div>
+
+            <div
+                class="stat-value"
+                id="adminUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Investigators
+            </div>
+
+            <div
+                class="stat-value"
+                id="investigatorUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Forensic Officers
+            </div>
+
+            <div
+                class="stat-value"
+                id="forensicUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+         FILTERS
+    ========================================== -->
+
+    <div class="filter-card">
+
+        <div class="filter-row">
+
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by name or email..."
+            >
+
+
+            <select
+                id="roleFilter"
+                class="filter-select"
+            >
+
+                <option value="">
+                    All Roles
+                </option>
+
+                <option value="Admin">
+                    Admin
+                </option>
+
+                <option value="Administrator">
+                    Administrator
+                </option>
+
+                <option value="Investigator">
+                    Investigator
+                </option>
+
+                <option value="Forensic Officer">
+                    Forensic Officer
+                </option>
+
+            </select>
+
+
+            <select
+                id="statusFilter"
+                class="filter-select"
+            >
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="Active">
+                    Active
+                </option>
+
+                <option value="Inactive">
+                    Inactive
+                </option>
+
+            </select>
+
+
+            <button
+                type="button"
+                class="clear-btn"
+                onclick="clearFilters()"
+            >
+                Clear
+            </button>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ERROR
+    ========================================== -->
+
+    <div
+        id="errorMessage"
+        class="error-message"
+    ></div>
+
+
+    <!-- =========================================
+         USERS HEADER
+    ========================================== -->
+
+    <div class="section-header">
+
+        <h2>
+            Registered Users
+        </h2>
+
+        <span id="resultCount">
+            0 users
+        </span>
+
+    </div>
+
+
+    <!-- =========================================
+         USERS
+    ========================================== -->
+
+    <div id="usersContainer">
+
+        <div class="empty">
+            Loading users...
+        </div>
+
+    </div>
+
+    <!-- ADD USER MODAL -->
+    <div id="addUserModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>+ Add New User</h3>
+                <button type="button" class="modal-close" onclick="closeAddUserModal()">&times;</button>
+            </div>
+            <form id="addUserForm" onsubmit="handleCreateUser(event)">
+                <div class="modal-body">
+                    <div id="addUserError" style="display:none; background:#fee2e2; color:#991b1b; padding:10px 14px; border-radius:6px; margin-bottom:14px; font-size:13px;"></div>
+                    
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="newFullName" placeholder="e.g. Tukaram Munde" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="newEmail" placeholder="e.g. user@evidenceai.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Initial Password *</label>
+                        <input type="password" id="newPassword" placeholder="Minimum 6 characters" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role *</label>
+                        <select id="newRole" required>
+                            <option value="1">Admin</option>
+                            <option value="2">Administrator</option>
+                            <option value="3">Investigator</option>
+                            <option value="4">Forensic Officer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Department / Badge (Optional)</label>
+                        <input type="text" id="newBadge" placeholder="e.g. FOOD-DEPT-HEAD or ADM-002">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number (Optional)</label>
+                        <input type="text" id="newPhone" placeholder="e.g. +91 9876543210">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeAddUserModal()">Cancel</button>
+                    <button type="submit" class="btn-submit" id="createUserBtn">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
+<script src="js/auth.js"></script>
+<script src="js/role-guard.js"></script>
+<script>
+
+
+var API_URL =
+    window.API_URL || (window.location.origin.includes(":5000") ? window.location.origin : "http://127.0.0.1:5000");
+window.API_URL = API_URL;
+
+
+let allUsers = [];
+
+
+// =====================================================
+// PAGE LOAD
+// =====================================================
+
+window.onload = function () {
+
+    loadUsers();
+
+};
+
+
+// =====================================================
+// LOAD USERS
+// =====================================================
+
+async function loadUsers() {
+
+    const errorBox =
+        document.getElementById(
+            "errorMessage"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL + "/users",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Users API error: " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Users:",
+            data
+        );
+
+
+        if (Array.isArray(data)) {
+
+            allUsers = data;
+
+        }
+        else if (data && Array.isArray(data.users)) {
+
+            allUsers = data.users;
+
+        }
+        else {
+
+            allUsers = [];
+
+        }
+
+
+        updateStats();
+
+        displayUsers(
+            allUsers
+        );
+
+
+        errorBox.style.display =
+            "none";
+
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        errorBox.innerText =
+            "Unable to connect to EvidenceAI backend. Make sure Flask and MySQL are running.";
+
+
+        errorBox.style.display =
+            "block";
+
+
+        document.getElementById(
+            "usersContainer"
+        ).innerHTML = `
+
+            <div class="empty">
+
+                Unable to load users.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// =====================================================
+// UPDATE STATS
+// =====================================================
+
+function updateStats() {
+
+    document.getElementById(
+        "totalUsers"
+    ).innerText =
+        allUsers.length;
+
+
+    let adminCount = 0;
+
+    let investigatorCount = 0;
+
+    let forensicCount = 0;
+
+
+    allUsers.forEach(
+        function(user) {
+
+
+            const role =
+                String(
+                    user.role_name || ""
+                );
+
+
+            if (
+                role === "Admin" ||
+                role === "Administrator"
+            ) {
+
+                adminCount++;
+
+            }
+
+
+            if (
+                role === "Investigator"
+            ) {
+
+                investigatorCount++;
+
+            }
+
+
+            if (
+                role === "Forensic Officer"
+            ) {
+
+                forensicCount++;
+
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "adminUsers"
+    ).innerText =
+        adminCount;
+
+
+    document.getElementById(
+        "investigatorUsers"
+    ).innerText =
+        investigatorCount;
+
+
+    document.getElementById(
+        "forensicUsers"
+    ).innerText =
+        forensicCount;
+
+}
+
+
+// =====================================================
+// FILTER USERS
+// =====================================================
+
+function filterUsers() {
+
+    const keyword =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const selectedRole =
+        document.getElementById(
+            "roleFilter"
+        ).value;
+
+
+    const selectedStatus =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    let results =
+        [...allUsers];
+
+
+    // SEARCH
+
+    if (keyword !== "") {
+
+        results =
+            results.filter(
+                function(user) {
+
+                    const name =
+                        String(
+                            user.full_name || ""
+                        ).toLowerCase();
+
+
+                    const email =
+                        String(
+                            user.email || ""
+                        ).toLowerCase();
+
+
+                    return (
+                        name.includes(keyword) ||
+                        email.includes(keyword)
+                    );
+
+                }
+            );
+
+    }
+
+
+    // ROLE FILTER
+
+    if (selectedRole !== "") {
+
+        results =
+            results.filter(
+                function(user) {
+
+                    return (
+                        String(
+                            user.role_name || ""
+                        ) === selectedRole
+                    );
+
+                }
+            );
+
+    }
+
+
+    // STATUS FILTER
+
+    if (selectedStatus !== "") {
+
+        results =
+            results.filter(
+                function(user) {
+
+                    return (
+                        String(
+                            user.status || ""
+                        ) === selectedStatus
+                    );
+
+                }
+            );
+
+    }
+
+
+    displayUsers(
+        results
+    );
+
+}
+
+
+// =====================================================
+// DISPLAY USERS
+// =====================================================
+
+function displayUsers(users) {
+
+    const container =
+        document.getElementById(
+            "usersContainer"
+        );
+
+
+    const count =
+        document.getElementById(
+            "resultCount"
+        );
+
+
+    count.innerText =
+        users.length +
+        (
+            users.length === 1
+                ? " user"
+                : " users"
+        );
+
+
+    if (users.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No users found.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    users.forEach(
+        function(user) {
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "user-card";
+
+
+            const role =
+                user.role_name ||
+                "User";
+
+
+            const status =
+                user.status ||
+                "Active";
+
+
+            const fullName =
+                user.full_name ||
+                "Unknown User";
+
+
+            const initials =
+                getInitials(
+                    fullName
+                );
+
+
+            const statusClass =
+                status.toLowerCase() ===
+                "active"
+                    ? "status-active"
+                    : "status-inactive";
+
+
+            card.innerHTML = `
+
+                <div class="user-top">
+
+                    <div class="user-left">
+
+
+                        <div class="user-avatar">
+
+                            ${safe(
+                                initials
+                            )}
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="user-name">
+
+                                ${safe(
+                                    fullName
+                                )}
+
+                            </div>
+
+
+                            <div class="user-email">
+
+                                ${safe(
+                                    user.email ||
+                                    "N/A"
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div style="display: flex; align-items: center;">
+
+                        <button
+                            type="button"
+                            class="role-badge-btn"
+                            title="Click to change role"
+                            onclick="changeRolePrompt(${user.user_id}, ${user.role_id}, '${safe(role)}', '${safe(fullName).replace(/'/g, "\\'")}')"
+                        >
+                            ${safe(role)}
+                            <span style="font-size: 10px; opacity: 0.7;">✎</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="status-badge-btn ${statusClass}"
+                            title="Click to activate / deactivate this user"
+                            onclick="toggleStatusPrompt(${user.user_id}, '${safe(status)}', '${safe(fullName).replace(/'/g, "\\'")}')"
+                        >
+                            ${status.toLowerCase() === "active" ? "● Active" : "○ Inactive"}
+                            <span style="font-size: 10px; opacity: 0.7;">✎</span>
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="user-info">
+
+                    <span>
+                        <strong>User ID:</strong>
+                        ${safe(user.user_id)}
+                    </span>
+
+                    <span>
+                        <strong>Role ID:</strong>
+                        ${safe(user.role_id)}
+                    </span>
+
+                    <span>
+                        <strong>Dept / Badge:</strong>
+                        ${safe(user.badge_number || "N/A")}
+                    </span>
+
+                    <span>
+                        <strong>Phone:</strong>
+                        ${safe(user.phone || "N/A")}
+                    </span>
+
+                </div>
+
+                <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #eef2f7; display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+                    ${Number(localStorage.getItem("user_id") || 0) === Number(user.user_id)
+                        ? '<span style="font-size: 12px; color: #6b7280; font-style: italic;">(Active Admin Session)</span>'
+                        : `<button type="button" class="delete-user-btn" onclick="deleteUserPrompt(${user.user_id}, '${safe(fullName).replace(/'/g, "\\'")}')">Remove User</button>`
+                    }
+                </div>
+
+            `;
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// CLEAR FILTERS
+// =====================================================
+
+function clearFilters() {
+
+    document.getElementById(
+        "searchInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "roleFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "statusFilter"
+    ).value = "";
+
+
+    displayUsers(
+        allUsers
+    );
+
+}
+
+
+// =====================================================
+// EVENTS
+// =====================================================
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    filterUsers
+);
+
+
+document.getElementById(
+    "roleFilter"
+).addEventListener(
+    "change",
+    filterUsers
+);
+
+
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    filterUsers
+);
+
+
+// =====================================================
+// GET INITIALS
+// =====================================================
+
+function getInitials(name) {
+
+    const parts =
+        String(name)
+            .trim()
+            .split(/\s+/);
+
+
+    if (parts.length >= 2) {
+
+        return (
+            parts[0].charAt(0) +
+            parts[1].charAt(0)
+        ).toUpperCase();
+
+    }
+
+
+    return String(name)
+        .substring(0, 2)
+        .toUpperCase();
+
+}
+
+
+// =====================================================
+// SAFE HTML
+// =====================================================
+
+function safe(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "N/A";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =====================================================
+// USER MODAL & ACTIONS
+// =====================================================
+
+function openAddUserModal() {
+    document.getElementById("addUserModal").style.display = "flex";
+    document.getElementById("addUserForm").reset();
+    const errorBox = document.getElementById("addUserError");
+    if (errorBox) {
+        errorBox.style.display = "none";
+        errorBox.innerText = "";
+    }
+}
+
+function closeAddUserModal() {
+    document.getElementById("addUserModal").style.display = "none";
+}
+
+async function handleCreateUser(e) {
+    if (e) e.preventDefault();
+    const errorBox = document.getElementById("addUserError");
+    const submitBtn = document.getElementById("createUserBtn");
+    
+    if (errorBox) {
+        errorBox.style.display = "none";
+        errorBox.innerText = "";
+    }
+
+    const fullName = document.getElementById("newFullName").value.trim();
+    const email = document.getElementById("newEmail").value.trim();
+    const password = document.getElementById("newPassword").value;
+    const roleId = Number(document.getElementById("newRole").value);
+    const badgeNumber = document.getElementById("newBadge").value.trim();
+    const phone = document.getElementById("newPhone").value.trim();
+
+    if (!fullName || !email || !password) {
+        if (errorBox) {
+            errorBox.innerText = "Please fill in all required fields.";
+            errorBox.style.display = "block";
+        }
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Creating...";
+
+    try {
+        const response = await fetch(API_URL + "/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                full_name: fullName,
+                email: email,
+                password: password,
+                role_id: roleId,
+                badge_number: badgeNumber,
+                phone: phone
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message || "User created successfully!");
+            closeAddUserModal();
+            loadUsers();
+        } else {
+            if (errorBox) {
+                errorBox.innerText = data.message || "Failed to create user.";
+                errorBox.style.display = "block";
+            }
+        }
+    } catch (err) {
+        console.error("Create user error:", err);
+        if (errorBox) {
+            errorBox.innerText = "Unable to connect to backend server.";
+            errorBox.style.display = "block";
+        }
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Create User";
+    }
+}
+
+async function deleteUserPrompt(userId, userName) {
+    if (!confirm(`Are you sure you want to remove user "${userName}"?\n\nAny cases or evidence associated with this user will be safely preserved.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message || `User "${userName}" was removed.`);
+            loadUsers();
+        } else {
+            alert(data.message || "Failed to remove user.");
+        }
+    } catch (err) {
+        console.error("Delete user error:", err);
+        alert("Unable to remove user. Please check your backend connection.");
+    }
+}
+
+// =====================================================
+// TOGGLE USER STATUS (ACTIVE / INACTIVE)
+// =====================================================
+
+async function toggleStatusPrompt(userId, currentStatus, userName) {
+    const isCurrentlyActive = String(currentStatus).toLowerCase() === "active";
+    const targetStatus = isCurrentlyActive ? "Inactive" : "Active";
+    const actionLabel = isCurrentlyActive ? "deactivate" : "activate";
+
+    const confirmed = confirm(
+        `Do you want to ${actionLabel} user "${userName}"?\n\n` +
+        (isCurrentlyActive
+            ? "When Inactive, this user will not be able to log into EvidenceAI."
+            : "When Active, this user will be able to log in and access system modules.")
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/status`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                status: targetStatus
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message || `User status changed to ${targetStatus}.`);
+            loadUsers();
+        } else {
+            alert(data.message || "Failed to update user status.");
+        }
+    } catch (err) {
+        console.error("Toggle status error:", err);
+        alert("Unable to update status. Please check backend connection.");
+    }
+}
+
+
+// =====================================================
+// CHANGE USER ROLE
+// =====================================================
+
+async function changeRolePrompt(userId, currentRoleId, currentRoleName, userName) {
+    const roleChoice = prompt(
+        `Change role for "${userName}" (Currently: ${currentRoleName}):\n\n` +
+        "Enter new Role ID:\n" +
+        "1 = Admin\n" +
+        "2 = Administrator\n" +
+        "3 = Investigator\n" +
+        "4 = Forensic Officer\n\n" +
+        "Enter 1, 2, 3, or 4:",
+        currentRoleId
+    );
+
+    if (!roleChoice) {
+        return;
+    }
+
+    const newRoleId = Number(roleChoice.trim());
+    if (![1, 2, 3, 4].includes(newRoleId)) {
+        alert("Invalid role selected. Please enter 1, 2, 3, or 4.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}/role`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                role_id: newRoleId
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            alert(data.message || "User role updated successfully.");
+            loadUsers();
+        } else {
+            alert(data.message || "Failed to update user role.");
+        }
+    } catch (err) {
+        console.error("Change role error:", err);
+        alert("Unable to change role. Please check backend connection.");
+    }
+}
+
+// Close modal when clicking outside
+window.addEventListener("click", function(event) {
+    const modal = document.getElementById("addUserModal");
+    if (event.target === modal) {
+        closeAddUserModal();
+    }
+});
+
+</script>
+
+
+</body>
+
+</html>

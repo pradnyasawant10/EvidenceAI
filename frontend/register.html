@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>EvidenceAI - Create Account</title>
+
+    <link rel="stylesheet" href="css/register.css">
+
+</head>
+
+
+<body class="register-page">
+
+
+    <!-- =========================================
+         REGISTRATION CONTAINER
+         ========================================= -->
+
+    <div class="register-container">
+
+        <div class="register-card">
+
+
+            <!-- Logo -->
+
+            <div class="register-logo">
+                🛡️
+            </div>
+
+
+            <!-- Heading -->
+
+            <h1>
+                Create Account
+            </h1>
+
+
+            <p class="register-subtitle">
+                Join EvidenceAI Digital Evidence Management System
+            </p>
+
+
+
+            <!-- =========================================
+                 REGISTRATION FORM
+                 ========================================= -->
+
+            <form id="registerForm">
+
+
+                <!-- First Name + Last Name -->
+
+                <div class="name-row">
+
+
+                    <div class="form-group">
+
+                        <label for="firstName">
+                            First Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            placeholder="Enter first name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <div class="form-group">
+
+                        <label for="lastName">
+                            Last Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Enter last name"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- Email -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Password -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Confirm Password -->
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Confirm your password"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Terms & Conditions -->
+
+                <label class="terms">
+
+                    <input
+                        type="checkbox"
+                        id="terms"
+                        name="terms"
+                    >
+
+                    <span>
+
+                        I agree to the
+
+                        <a href="#">
+                            Terms & Conditions
+                        </a>
+
+                    </span>
+
+                </label>
+
+
+
+                <!-- Create Account Button -->
+
+                <button
+                    type="submit"
+                    class="register-btn"
+                    id="registerBtn"
+                >
+                    Create Account
+                </button>
+
+
+            </form>
+
+
+
+            <!-- Login Link -->
+
+            <p class="login-text">
+
+                Already have an account?
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         SUCCESS POPUP
+         ========================================= -->
+
+    <div
+        class="success-modal-overlay"
+        id="successModal"
+    >
+
+
+        <div class="success-modal">
+
+
+            <!-- Success Icon -->
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+
+            <!-- Success Heading -->
+
+            <h2>
+                Account Created!
+            </h2>
+
+
+            <!-- Success Message -->
+
+            <p>
+                Your EvidenceAI account has been created successfully.
+            </p>
+
+
+            <!-- OK Button -->
+
+            <button
+                type="button"
+                class="success-ok-btn"
+                id="successOkBtn"
+            >
+                OK
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+         ========================================= -->
+
+    <script src="js/register.js"></script>
+
+
+</body>
+
+</html>

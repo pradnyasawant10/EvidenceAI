@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Activity Logs - EvidenceAI</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        /* HEADER */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+            color: #111827;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            background: #111827;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 7px;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* FILTER CARD */
+
+        .filter-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        #searchInput {
+            flex: 1;
+            min-width: 250px;
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        #searchInput:focus {
+            border-color: #2563eb;
+        }
+
+        select {
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+        }
+
+        .clear-btn {
+            height: 44px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 7px;
+            background: #e5e7eb;
+            cursor: pointer;
+        }
+
+        .clear-btn:hover {
+            background: #d1d5db;
+        }
+
+        /* LOG SECTION */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        #resultCount {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* LOG CARD */
+
+        .log-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .log-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .action-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 6px 11px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .module-badge {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 6px 11px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .log-description {
+            font-size: 15px;
+            color: #111827;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .log-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .log-info strong {
+            color: #374151;
+        }
+
+        .empty {
+            background: white;
+            padding: 50px;
+            text-align: center;
+            border-radius: 10px;
+            color: #6b7280;
+        }
+
+        .error {
+            display: none;
+            margin-bottom: 20px;
+            padding: 14px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 7px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+
+            #searchInput,
+            select,
+            .clear-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                Activity Logs
+            </h1>
+
+            <p>
+                Track user activities and system actions in EvidenceAI.
+            </p>
+
+        </div>
+
+        <a
+            href="dashboard.html"
+            class="back-btn"
+        >
+            ← Dashboard
+        </a>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Total Activities
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalActivities"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Case Activities
+            </div>
+
+            <div
+                class="stat-value"
+                id="caseActivities"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Evidence Activities
+            </div>
+
+            <div
+                class="stat-value"
+                id="evidenceActivities"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                AI / Report Activities
+            </div>
+
+            <div
+                class="stat-value"
+                id="aiActivities"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTERS -->
+
+    <div class="filter-card">
+
+        <div class="filter-row">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search activity, user, case or evidence..."
+            >
+
+
+            <select
+                id="moduleFilter"
+            >
+
+                <option value="">
+                    All Modules
+                </option>
+
+                <option value="Authentication">
+                    Authentication
+                </option>
+
+                <option value="Cases">
+                    Cases
+                </option>
+
+                <option value="Evidence">
+                    Evidence
+                </option>
+
+                <option value="AI Analysis">
+                    AI Analysis
+                </option>
+
+                <option value="Reports">
+                    Reports
+                </option>
+
+                <option value="Activity Logs">
+                    Activity Logs
+                </option>
+
+            </select>
+
+
+            <select
+                id="actionFilter"
+            >
+
+                <option value="">
+                    All Actions
+                </option>
+
+                <option value="User Login">
+                    User Login
+                </option>
+
+                <option value="User Registered">
+                    User Registered
+                </option>
+
+                <option value="Case Created">
+                    Case Created
+                </option>
+
+                <option value="Evidence Uploaded">
+                    Evidence Uploaded
+                </option>
+
+                <option value="AI Analysis Performed">
+                    AI Analysis Performed
+                </option>
+
+                <option value="Report Generated">
+                    Report Generated
+                </option>
+
+            </select>
+
+
+            <button
+                class="clear-btn"
+                type="button"
+                onclick="clearFilters()"
+            >
+                Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorMessage"
+        class="error"
+    ></div>
+
+
+    <!-- LOGS -->
+
+    <div class="section-header">
+
+        <h2>
+            Activity History
+        </h2>
+
+        <span id="resultCount">
+            0 activities
+        </span>
+
+    </div>
+
+
+    <div id="logsContainer">
+
+        <div class="empty">
+            Loading activity logs...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/auth.js"></script>
+<script src="js/role-guard.js"></script>
+<script>
+
+var API_URL =
+    window.API_URL || (window.location.origin.includes(":5000") ? window.location.origin : "http://127.0.0.1:5000");
+window.API_URL = API_URL;
+
+let allLogs = [];
+
+
+// =====================================================
+// PAGE LOAD
+// =====================================================
+
+window.onload = function () {
+
+    loadActivityLogs();
+
+};
+
+
+// =====================================================
+// LOAD ACTIVITY LOGS
+// =====================================================
+
+async function loadActivityLogs() {
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL + "/activity-logs",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Activity Logs API Error"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Activity Logs:",
+            data
+        );
+
+
+        if (Array.isArray(data)) {
+
+            allLogs = data;
+
+        }
+        else if (data && Array.isArray(data.logs)) {
+
+            allLogs = data.logs;
+
+        }
+        else {
+
+            allLogs = [];
+
+        }
+
+
+        updateStats();
+
+        displayLogs(
+            allLogs
+        );
+
+
+        document.getElementById(
+            "errorMessage"
+        ).style.display = "none";
+
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        const errorBox =
+            document.getElementById(
+                "errorMessage"
+            );
+
+
+        errorBox.innerText =
+            "Unable to connect to EvidenceAI backend. Make sure Flask and MySQL are running.";
+
+
+        errorBox.style.display =
+            "block";
+
+
+        document.getElementById(
+            "logsContainer"
+        ).innerHTML = `
+
+            <div class="empty">
+
+                Unable to load activity logs.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// =====================================================
+// UPDATE STATS
+// =====================================================
+
+function updateStats() {
+
+    document.getElementById(
+        "totalActivities"
+    ).innerText =
+        allLogs.length;
+
+
+    let caseCount = 0;
+
+    let evidenceCount = 0;
+
+    let aiReportCount = 0;
+
+
+    allLogs.forEach(function(log) {
+
+        if (
+            log.module_name === "Cases"
+        ) {
+
+            caseCount++;
+
+        }
+
+
+        if (
+            log.module_name === "Evidence"
+        ) {
+
+            evidenceCount++;
+
+        }
+
+
+        if (
+            log.module_name === "AI Analysis" ||
+            log.module_name === "Reports"
+        ) {
+
+            aiReportCount++;
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "caseActivities"
+    ).innerText =
+        caseCount;
+
+
+    document.getElementById(
+        "evidenceActivities"
+    ).innerText =
+        evidenceCount;
+
+
+    document.getElementById(
+        "aiActivities"
+    ).innerText =
+        aiReportCount;
+
+}
+
+
+// =====================================================
+// SEARCH AND FILTER
+// =====================================================
+
+function filterLogs() {
+
+    const keyword =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+    const module =
+        document.getElementById(
+            "moduleFilter"
+        ).value;
+
+
+    const action =
+        document.getElementById(
+            "actionFilter"
+        ).value;
+
+
+    let results =
+        [...allLogs];
+
+
+    // KEYWORD SEARCH
+
+    if (keyword !== "") {
+
+        results =
+            results.filter(function(log) {
+
+                const description =
+                    String(
+                        log.description || ""
+                    ).toLowerCase();
+
+
+                const fullName =
+                    String(
+                        log.full_name || ""
+                    ).toLowerCase();
+
+
+                const email =
+                    String(
+                        log.email || ""
+                    ).toLowerCase();
+
+
+                const caseNumber =
+                    String(
+                        log.case_number || ""
+                    ).toLowerCase();
+
+
+                const caseTitle =
+                    String(
+                        log.case_title || ""
+                    ).toLowerCase();
+
+
+                const evidenceNumber =
+                    String(
+                        log.evidence_number || ""
+                    ).toLowerCase();
+
+
+                const actionType =
+                    String(
+                        log.action_type || ""
+                    ).toLowerCase();
+
+
+                return (
+
+                    description.includes(keyword)
+
+                    ||
+
+                    fullName.includes(keyword)
+
+                    ||
+
+                    email.includes(keyword)
+
+                    ||
+
+                    caseNumber.includes(keyword)
+
+                    ||
+
+                    caseTitle.includes(keyword)
+
+                    ||
+
+                    evidenceNumber.includes(keyword)
+
+                    ||
+
+                    actionType.includes(keyword)
+
+                );
+
+            });
+
+    }
+
+
+    // MODULE FILTER
+
+    if (module !== "") {
+
+        results =
+            results.filter(function(log) {
+
+                return (
+                    log.module_name === module
+                );
+
+            });
+
+    }
+
+
+    // ACTION FILTER
+
+    if (action !== "") {
+
+        results =
+            results.filter(function(log) {
+
+                return (
+                    log.action_type === action
+                );
+
+            });
+
+    }
+
+
+    displayLogs(
+        results
+    );
+
+}
+
+
+// =====================================================
+// DISPLAY LOGS
+// =====================================================
+
+function displayLogs(logs) {
+
+    const container =
+        document.getElementById(
+            "logsContainer"
+        );
+
+
+    const count =
+        document.getElementById(
+            "resultCount"
+        );
+
+
+    count.innerText =
+        logs.length +
+        (
+            logs.length === 1
+                ? " activity"
+                : " activities"
+        );
+
+
+    if (logs.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                No activity logs found.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    logs.forEach(function(log) {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "log-card";
+
+
+        card.innerHTML = `
+
+            <div class="log-top">
+
+                <span class="action-badge">
+
+                    ${safe(
+                        log.action_type
+                    )}
+
+                </span>
+
+
+                <span class="module-badge">
+
+                    ${safe(
+                        log.module_name
+                    )}
+
+                </span>
+
+            </div>
+
+
+            <div class="log-description">
+
+                ${safe(
+                    log.description ||
+                    "No description available."
+                )}
+
+            </div>
+
+
+            <div class="log-info">
+
+                <span>
+
+                    <strong>User:</strong>
+
+                    ${safe(
+                        log.full_name ||
+                        "Unknown"
+                    )}
+
+                </span>
+
+
+                <span>
+
+                    <strong>Email:</strong>
+
+                    ${safe(
+                        log.email ||
+                        "N/A"
+                    )}
+
+                </span>
+
+
+                <span>
+
+                    <strong>Case:</strong>
+
+                    ${safe(
+                        log.case_number ||
+                        "N/A"
+                    )}
+
+                </span>
+
+
+                <span>
+
+                    <strong>Evidence:</strong>
+
+                    ${safe(
+                        log.evidence_number ||
+                        "N/A"
+                    )}
+
+                </span>
+
+
+                <span>
+
+                    <strong>Date:</strong>
+
+                    ${formatDate(
+                        log.created_at
+                    )}
+
+                </span>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+// =====================================================
+// CLEAR FILTERS
+// =====================================================
+
+function clearFilters() {
+
+    document.getElementById(
+        "searchInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "moduleFilter"
+    ).value = "";
+
+
+    document.getElementById(
+        "actionFilter"
+    ).value = "";
+
+
+    displayLogs(
+        allLogs
+    );
+
+}
+
+
+// =====================================================
+// EVENTS
+// =====================================================
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    filterLogs
+);
+
+
+document.getElementById(
+    "moduleFilter"
+).addEventListener(
+    "change",
+    filterLogs
+);
+
+
+document.getElementById(
+    "actionFilter"
+).addEventListener(
+    "change",
+    filterLogs
+);
+
+
+// =====================================================
+// DATE FORMAT
+// =====================================================
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "N/A";
+
+    }
+
+
+    try {
+
+        const date =
+            new Date(value);
+
+
+        if (
+            isNaN(date.getTime())
+        ) {
+
+            return String(value);
+
+        }
+
+
+        return date.toLocaleString();
+
+    }
+    catch {
+
+        return String(value);
+
+    }
+
+}
+
+
+// =====================================================
+// SAFE HTML
+// =====================================================
+
+function safe(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "N/A";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+</html>

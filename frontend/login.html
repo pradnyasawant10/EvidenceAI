@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - EvidenceAI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: #f4f7fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 430px;
+            background: #ffffff;
+            border: 1px solid #e1e6ef;
+            border-radius: 18px;
+            padding: 38px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.10);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 14px;
+            background: #edf3ff;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+        }
+
+        .logo h1 {
+            font-size: 30px;
+            color: #2451a6;
+            margin-bottom: 7px;
+        }
+
+        .logo p {
+            font-size: 13px;
+            color: #7b8494;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 23px;
+            color: #202938;
+            margin-bottom: 7px;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: #7b8494;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #303949;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 47px;
+            padding: 0 14px;
+            border: 1px solid #d5dce7;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+            color: #263140;
+        }
+
+        .form-group input:focus {
+            border-color: #2857b7;
+            box-shadow: 0 0 0 3px rgba(40, 87, 183, 0.10);
+        }
+
+        .form-group input::placeholder {
+            color: #a2acbb;
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            font-size: 13px;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #697386;
+        }
+
+        .remember input {
+            width: 15px;
+            height: 15px;
+        }
+
+        .forgot {
+            color: #2451a6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 47px;
+            border: none;
+            border-radius: 9px;
+            background: #2857b7;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #214ba5;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .message {
+            min-height: 20px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .register {
+            text-align: center;
+            border-top: 1px solid #edf0f5;
+            margin-top: 24px;
+            padding-top: 20px;
+            font-size: 14px;
+            color: #6d7686;
+        }
+
+        .register a {
+            color: #2451a6;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+        .home {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .home a {
+            color: #737d8d;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .home a:hover {
+            color: #2451a6;
+        }
+
+        @media (max-width: 500px) {
+            .page {
+                padding: 15px;
+            }
+
+            .login-card {
+                padding: 28px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="login-card">
+
+        <!-- LOGO -->
+        <div class="logo">
+
+            <div class="logo-icon">
+                🛡️
+            </div>
+
+            <h1>EvidenceAI</h1>
+
+            <p>
+                Digital Evidence Management System
+            </p>
+
+        </div>
+
+
+        <!-- WELCOME -->
+        <div class="welcome">
+
+            <h2>Welcome Back</h2>
+
+            <p>
+                Login to access your account
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
+
+            <!-- EMAIL -->
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- OPTIONS -->
+            <div class="options">
+
+                <label class="remember">
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                    >
+
+                    <span>
+                        Remember me
+                    </span>
+
+                </label>
+
+                <a
+                    href="forgot-password.html"
+                    class="forgot"
+                >
+                    Forgot Password?
+                </a>
+
+            </div>
+
+
+            <!-- LOGIN BUTTON -->
+            <button
+                type="submit"
+                id="loginBtn"
+                class="login-btn"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <!-- MESSAGE -->
+        <div
+            id="loginMessage"
+            class="message"
+        ></div>
+
+
+        <!-- REGISTER -->
+        <div class="register">
+
+            Don't have an account?
+
+            <a href="register.html">
+                Create Account
+            </a>
+
+        </div>
+
+
+        <!-- HOME -->
+        <div class="home">
+
+            <a href="index.html">
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="js/login.js"></script>
+
+</body>
+</html>

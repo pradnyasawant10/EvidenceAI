@@ -1,0 +1,29 @@
+# =========================================================
+# EvidenceAI - Python Dependencies
+# =========================================================
+
+# Backend Web Framework & API
+Flask>=3.0.0
+flask-cors>=5.0.0
+Werkzeug>=3.0.0
+requests>=2.31.0
+
+# Database Connectivity
+mysql-connector-python>=8.0.0
+
+# PDF Report Generation & Document Parsing
+reportlab>=4.0.0
+pypdf>=5.0.0
+
+# Computer Vision & Image Processing
+opencv-python>=4.8.0
+Pillow>=10.0.0
+pytesseract>=0.3.10
+
+# AI Models (YOLO Object Detection & Faster-Whisper Speech-to-Text)
+ultralytics>=8.1.0
+torch>=2.0.0
+torchvision>=0.15.0
+faster-whisper>=1.0.0
+av>=11.0.0
+numpy>=1.24.0

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Analysis - EvidenceAI</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/ai-analysis.css">
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="top-header">
+
+        <div class="logo">
+            <span class="logo-icon">🛡️</span>
+            <span>EvidenceAI</span>
+        </div>
+
+        <nav class="main-nav">
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="cases.html">
+                Cases
+            </a>
+
+            <a href="evidence.html">
+                Evidence
+            </a>
+
+            <a href="ai-analysis.html" class="active">
+                AI Analysis
+            </a>
+
+            <a href="search.html">
+                Search Evidence
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+            <a href="activity-logs.html">
+                Activity Logs
+            </a>
+
+            <a href="users.html">
+                Users
+            </a>
+
+            <a href="settings.html">
+                Settings
+            </a>
+
+        </nav>
+
+        <button class="logout-btn" onclick="logout()">
+            Logout
+        </button>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="ai-container">
+
+
+        <!-- Page Heading -->
+
+        <div class="page-heading">
+
+            <div>
+
+                <h1>
+                    AI Analysis
+                </h1>
+
+                <p>
+                    Analyze digital evidence using artificial intelligence.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ANALYSIS STATISTICS
+        ========================== -->
+
+        <section class="analysis-stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🤖
+                </div>
+
+                <div>
+
+                    <h3 id="totalAnalyses">
+                        0
+                    </h3>
+
+                    <p>
+                        Total Analyses
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔍
+                </div>
+
+                <div>
+
+                    <h3 id="completedAnalyses">
+                        0
+                    </h3>
+
+                    <p>
+                        Completed
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⏳
+                </div>
+
+                <div>
+
+                    <h3 id="processingAnalyses">
+                        0
+                    </h3>
+
+                    <p>
+                        Processing
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ❌
+                </div>
+
+                <div>
+
+                    <h3 id="failedAnalyses">
+                        0
+                    </h3>
+
+                    <p>
+                        Failed
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NEW ANALYSIS CARD
+        ========================== -->
+
+        <section class="analysis-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Run New AI Analysis
+                    </h2>
+
+                    <p>
+                        Select evidence and choose an AI analysis method.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="analysisForm">
+
+
+                <!-- Select Case -->
+
+                <div class="form-group">
+
+                    <label for="analysisCase">
+                        Select Case <span>*</span>
+                    </label>
+
+                    <select id="analysisCase" required>
+
+                        <option value="">
+                            Select Case
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Select Evidence -->
+
+                <div class="form-group">
+
+                    <label for="analysisEvidence">
+                        Select Evidence <span>*</span>
+                    </label>
+
+                    <select id="analysisEvidence" required>
+
+                        <option value="">
+                            Select Evidence
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Analysis Type -->
+
+                <div class="form-group">
+
+                    <label for="analysisType">
+                        Analysis Type <span>*</span>
+                    </label>
+
+                    <select id="analysisType" required>
+
+                        <option value="">
+                            Select Analysis Type
+                        </option>
+
+                        <option value="Object Detection">
+                            Object Detection
+                        </option>
+
+                        <option value="OCR">
+                            OCR
+                        </option>
+
+                        <option value="Face Detection">
+                            Face Detection
+                        </option>
+
+                        <option value="Audio Transcription">
+                            Audio Transcription
+                        </option>
+
+                        <option value="General Analysis">
+                            General Analysis
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Analysis Information -->
+
+                <div class="analysis-info">
+
+                    <div class="info-icon">
+                        💡
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            AI Analysis Information
+                        </strong>
+
+                        <p id="analysisDescription">
+                            Select an analysis type to see what the AI
+                            module will perform.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Run Button -->
+
+                <div class="analysis-actions">
+
+                    <button
+                        type="submit"
+                        class="run-analysis-btn"
+                    >
+                        🤖 Run AI Analysis
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- =========================
+             ANALYSIS RESULTS
+        ========================== -->
+
+        <section class="results-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Analysis Results
+                    </h2>
+
+                    <p>
+                        Previous AI analysis results for digital evidence.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Evidence
+                            </th>
+
+                            <th>
+                                Case
+                            </th>
+
+                            <th>
+                                Analysis Type
+                            </th>
+
+                            <th>
+                                Result
+                            </th>
+
+                            <th>
+                                Confidence
+                            </th>
+
+                            <th>
+                                Model
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Analyzed At
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="analysisTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="empty-message"
+                            >
+                                No AI analysis available.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =========================
+         RESULT DETAILS MODAL
+    ========================== -->
+
+    <div
+        id="resultModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        AI Analysis Details
+                    </h2>
+
+                    <p>
+                        Detailed result of the selected analysis.
+                    </p>
+
+                </div>
+
+                <button
+                    class="close-btn"
+                    onclick="closeResultModal()"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <div class="details-content">
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Evidence:
+                    </strong>
+
+                    <span id="detailEvidence">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Case:
+                    </strong>
+
+                    <span id="detailCase">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Analysis Type:
+                    </strong>
+
+                    <span id="detailAnalysisType">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Confidence:
+                    </strong>
+
+                    <span id="detailConfidence">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Model:
+                    </strong>
+
+                    <span id="detailModel">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Status:
+                    </strong>
+
+                    <span id="detailAnalysisStatus">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="detail-row">
+
+                    <strong>
+                        Analyzed At:
+                    </strong>
+
+                    <span id="detailAnalyzedAt">
+                        -
+                    </span>
+
+                </div>
+
+
+                <div class="result-box">
+
+                    <strong>
+                        AI Result
+                    </strong>
+
+                    <p id="detailResult">
+                        No result available.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/auth.js"></script>
+    <script src="js/role-guard.js"></script>
+    <script src="js/ai-analysis.js"></script>
+
+</body>
+</html>

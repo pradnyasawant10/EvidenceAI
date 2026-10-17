@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Evidence Integrity - EvidenceAI</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+
+        .page {
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+
+        .header h1 {
+            margin: 0;
+
+            font-size: 30px;
+
+            color: #111827;
+        }
+
+
+        .header p {
+            margin: 8px 0 0;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        .back-btn {
+            text-decoration: none;
+
+            background: #111827;
+            color: white;
+
+            padding: 11px 18px;
+
+            border-radius: 7px;
+        }
+
+
+        /* =========================================
+           MAIN CARD
+        ========================================= */
+
+        .main-card {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+
+            margin-bottom: 20px;
+        }
+
+
+        .main-card h2 {
+            margin-top: 0;
+
+            margin-bottom: 7px;
+
+            font-size: 20px;
+
+            color: #111827;
+        }
+
+
+        .subtitle {
+            margin-top: 0;
+
+            margin-bottom: 22px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #374151;
+        }
+
+
+        .form-group select {
+            width: 100%;
+
+            height: 46px;
+
+            padding: 0 12px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 7px;
+
+            background: white;
+
+            color: #111827;
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        .form-group select:focus {
+            border-color: #2563eb;
+        }
+
+
+        .verify-btn {
+            border: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            cursor: pointer;
+        }
+
+
+        .verify-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           STATUS
+        ========================================= */
+
+        .status-box {
+            display: none;
+
+            padding: 18px;
+
+            border-radius: 9px;
+
+            margin-top: 20px;
+
+            line-height: 1.6;
+        }
+
+
+        .status-success {
+            background: #dcfce7;
+
+            border: 1px solid #86efac;
+
+            color: #166534;
+        }
+
+
+        .status-danger {
+            background: #fee2e2;
+
+            border: 1px solid #fca5a5;
+
+            color: #991b1b;
+        }
+
+
+        .status-warning {
+            background: #fef3c7;
+
+            border: 1px solid #fcd34d;
+
+            color: #92400e;
+        }
+
+
+        .status-title {
+            font-size: 17px;
+
+            font-weight: bold;
+
+            margin-bottom: 6px;
+        }
+
+
+        /* =========================================
+           DETAILS
+        ========================================= */
+
+        .details-card {
+            display: none;
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px rgba(0,0,0,0.06);
+        }
+
+
+        .details-card h2 {
+            margin-top: 0;
+
+            font-size: 20px;
+        }
+
+
+        .detail-row {
+            padding: 13px 0;
+
+            border-bottom: 1px solid #eef2f7;
+        }
+
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .detail-label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .hash-box {
+            padding: 12px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 7px;
+
+            font-family: Consolas, monospace;
+
+            font-size: 12px;
+
+            word-break: break-all;
+
+            line-height: 1.6;
+        }
+
+
+        .match-text {
+            color: #166534;
+
+            font-weight: bold;
+        }
+
+
+        .mismatch-text {
+            color: #991b1b;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================================
+           LOADING
+        ========================================= */
+
+        .loading {
+            display: none;
+
+            margin-top: 15px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 700px) {
+
+            .page {
+                padding: 20px;
+            }
+
+
+            .header {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                Evidence Integrity
+            </h1>
+
+            <p>
+                Verify whether an evidence file has changed after upload.
+            </p>
+
+        </div>
+
+
+        <div style="display: flex; gap: 10px;">
+            <a
+                href="evidence.html"
+                class="back-btn"
+                style="background: #2563eb;"
+            >
+                ← Evidence
+            </a>
+            <a
+                href="dashboard.html"
+                class="back-btn"
+            >
+                ← Dashboard
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         VERIFY CARD
+    ========================================== -->
+
+    <div class="main-card">
+
+        <h2>
+            Verify Evidence
+        </h2>
+
+
+        <p class="subtitle">
+            Select an evidence file and compare its current SHA-256
+            hash with the hash stored during upload.
+        </p>
+
+
+        <div class="form-group">
+
+            <label for="evidenceSelect">
+                Select Evidence
+            </label>
+
+
+            <select
+                id="evidenceSelect"
+            >
+
+                <option value="">
+                    Loading evidence...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="verify-btn"
+            onclick="verifyIntegrity()"
+        >
+            Verify Integrity
+        </button>
+
+
+        <div
+            id="loadingMessage"
+            class="loading"
+        >
+            Verifying evidence integrity...
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div
+            id="statusBox"
+            class="status-box"
+        >
+
+            <div
+                id="statusTitle"
+                class="status-title"
+            ></div>
+
+
+            <div
+                id="statusMessage"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         DETAILS
+    ========================================== -->
+
+    <div
+        id="detailsCard"
+        class="details-card"
+    >
+
+        <h2>
+            Integrity Details
+        </h2>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Evidence Number
+            </span>
+
+            <span id="detailEvidenceNumber">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                File Name
+            </span>
+
+            <span id="detailFileName">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Stored SHA-256 Hash
+            </span>
+
+            <div
+                id="storedHash"
+                class="hash-box"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Current SHA-256 Hash
+            </span>
+
+            <div
+                id="currentHash"
+                class="hash-box"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="detail-row">
+
+            <span class="detail-label">
+                Integrity Result
+            </span>
+
+            <span id="integrityResult">
+                -
+            </span>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script src="js/auth.js"></script>
+<script src="js/role-guard.js"></script>
+<script>
+
+
+var API_URL =
+    window.API_URL || (window.location.origin.includes(":5000") ? window.location.origin : "http://127.0.0.1:5000");
+window.API_URL = API_URL;
+
+
+let allEvidence = [];
+
+
+// =====================================================
+// PAGE LOAD
+// =====================================================
+
+window.onload = function () {
+
+    loadEvidence();
+
+};
+
+
+// =====================================================
+// LOAD EVIDENCE
+// =====================================================
+
+async function loadEvidence() {
+
+    const select =
+        document.getElementById(
+            "evidenceSelect"
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL + "/evidence",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load evidence."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (Array.isArray(data)) {
+
+            allEvidence = data;
+
+        }
+        else if (data && Array.isArray(data.evidence)) {
+
+            allEvidence = data.evidence;
+
+        }
+        else {
+
+            allEvidence = [];
+
+        }
+
+
+        // Clear dropdown
+
+        select.innerHTML = "";
+
+
+        // Default option
+
+        const defaultOption =
+            document.createElement(
+                "option"
+            );
+
+
+        defaultOption.value = "";
+
+        defaultOption.textContent =
+            "Select Evidence";
+
+
+        select.appendChild(
+            defaultOption
+        );
+
+
+        // No evidence
+
+        if (allEvidence.length === 0) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = "";
+
+            option.textContent =
+                "No evidence available";
+
+            select.appendChild(
+                option
+            );
+
+            return;
+
+        }
+
+
+        // Add evidence
+
+        allEvidence.forEach(
+            function(item) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    item.evidence_id;
+
+
+                option.textContent =
+                    (
+                        item.evidence_number ||
+                        "N/A"
+                    ) +
+                    " - " +
+                    (
+                        item.file_name ||
+                        "Unnamed File"
+                    );
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        const params = new URLSearchParams(window.location.search);
+        const urlId = params.get("evidence_id");
+        if (urlId) {
+            select.value = urlId;
+            verifyIntegrity();
+        }
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Evidence loading error:",
+            error
+        );
+
+
+        select.innerHTML = "";
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value = "";
+
+        option.textContent =
+            "Unable to load evidence";
+
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// VERIFY INTEGRITY
+// =====================================================
+
+async function verifyIntegrity() {
+
+    const select =
+        document.getElementById(
+            "evidenceSelect"
+        );
+
+
+    const evidenceId =
+        select.value;
+
+
+    if (!evidenceId) {
+
+        showWarning(
+            "Please select an evidence file first."
+        );
+
+        return;
+
+    }
+
+
+    const loading =
+        document.getElementById(
+            "loadingMessage"
+        );
+
+
+    const detailsCard =
+        document.getElementById(
+            "detailsCard"
+        );
+
+
+    loading.style.display =
+        "block";
+
+
+    detailsCard.style.display =
+        "none";
+
+
+    hideStatus();
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL +
+                "/evidence/" +
+                evidenceId +
+                "/verify",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Integrity response:",
+            data
+        );
+
+
+        if (
+            data.integrity === true ||
+            data.integrity_verified === true
+        ) {
+
+            showSuccess(
+                data.message ||
+                "Evidence integrity verified successfully."
+            );
+
+        }
+        else {
+
+            showDanger(
+                data.message ||
+                "Evidence integrity verification failed."
+            );
+
+        }
+
+
+        // Show details if available
+
+        showIntegrityDetails(
+            data
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Integrity verification error:",
+            error
+        );
+
+
+        showDanger(
+            "Unable to connect to EvidenceAI backend."
+        );
+
+    }
+    finally {
+
+        loading.style.display =
+            "none";
+
+    }
+
+}
+
+
+// =====================================================
+// SHOW DETAILS
+// =====================================================
+
+function showIntegrityDetails(data) {
+
+    const detailsCard =
+        document.getElementById(
+            "detailsCard"
+        );
+
+
+    detailsCard.style.display =
+        "block";
+
+
+    document.getElementById(
+        "detailEvidenceNumber"
+    ).innerText =
+        data.evidence_number ||
+        "N/A";
+
+
+    document.getElementById(
+        "detailFileName"
+    ).innerText =
+        data.file_name ||
+        "N/A";
+
+
+    document.getElementById(
+        "storedHash"
+    ).innerText =
+        data.stored_hash ||
+        "No stored hash available";
+
+
+    document.getElementById(
+        "currentHash"
+    ).innerText =
+        data.current_hash ||
+        "Current hash unavailable";
+
+
+    const resultElement =
+        document.getElementById(
+            "integrityResult"
+        );
+
+
+    if (
+        data.integrity === true ||
+        data.integrity_verified === true
+    ) {
+
+        resultElement.innerText =
+            "VERIFIED - File is unchanged.";
+
+        resultElement.className =
+            "match-text";
+
+    }
+    else {
+
+        resultElement.innerText =
+            "FAILED - Hash mismatch or file unavailable.";
+
+        resultElement.className =
+            "mismatch-text";
+
+    }
+
+}
+
+
+// =====================================================
+// SUCCESS
+// =====================================================
+
+function showSuccess(message) {
+
+    const box =
+        document.getElementById(
+            "statusBox"
+        );
+
+
+    const title =
+        document.getElementById(
+            "statusTitle"
+        );
+
+
+    const messageElement =
+        document.getElementById(
+            "statusMessage"
+        );
+
+
+    box.className =
+        "status-box status-success";
+
+
+    title.innerText =
+        "Integrity Verified";
+
+
+    messageElement.innerText =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+// =====================================================
+// DANGER
+// =====================================================
+
+function showDanger(message) {
+
+    const box =
+        document.getElementById(
+            "statusBox"
+        );
+
+
+    const title =
+        document.getElementById(
+            "statusTitle"
+        );
+
+
+    const messageElement =
+        document.getElementById(
+            "statusMessage"
+        );
+
+
+    box.className =
+        "status-box status-danger";
+
+
+    title.innerText =
+        "Integrity Verification Failed";
+
+
+    messageElement.innerText =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+// =====================================================
+// WARNING
+// =====================================================
+
+function showWarning(message) {
+
+    const box =
+        document.getElementById(
+            "statusBox"
+        );
+
+
+    const title =
+        document.getElementById(
+            "statusTitle"
+        );
+
+
+    const messageElement =
+        document.getElementById(
+            "statusMessage"
+        );
+
+
+    box.className =
+        "status-box status-warning";
+
+
+    title.innerText =
+        "Select Evidence";
+
+
+    messageElement.innerText =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+// =====================================================
+// HIDE STATUS
+// =====================================================
+
+function hideStatus() {
+
+    document.getElementById(
+        "statusBox"
+    ).style.display =
+        "none";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
