@@ -17,7 +17,7 @@ reportlab>=4.0.0
 pypdf>=5.0.0
 
 # Computer Vision & Image Processing
-opencv-python>=4.8.0
+opencv-python==4.10.0.84
 Pillow>=10.0.0
 pytesseract>=0.3.10
 
