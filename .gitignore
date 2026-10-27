@@ -63,6 +63,8 @@ EvidenceAI_Police_Theft_Evidence_Test.pdf
 *.dump
 *.sqlite
 *.sqlite3
+*.db
+
 
 # Temporary and Scratch Files
 scratch/

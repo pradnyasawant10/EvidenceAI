@@ -1,11 +1,14 @@
-from flask import Flask, request, jsonify, send_from_directory, session
-from flask_cors import CORS
-
-import mysql.connector
 import os
 import sys
 import hashlib
+import sqlite3
+import re
 from datetime import datetime
+from urllib.parse import urlparse
+from dotenv import load_dotenv
+from flask import Flask, request, jsonify, send_from_directory, session
+from flask_cors import CORS
+import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -53,28 +56,38 @@ except Exception as error:
 # FLASK APP
 # =========================================================
 
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "EvidenceAI_College_Project_Secret_Key_2026"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "EvidenceAI_College_Project_Secret_Key_2026"
 
 FRONTEND_FOLDER = os.path.join(BASE_DIR, "frontend")
+
+# Dynamically construct CORS allowed origins
+ALLOWED_CORS_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "http://127.0.0.1:5501",
+    "http://localhost:5501",
+    "http://127.0.0.1:5000",
+    "http://localhost:5000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "null"
+]
+
+render_external_url = os.environ.get("RENDER_EXTERNAL_URL")
+if render_external_url:
+    ALLOWED_CORS_ORIGINS.append(render_external_url.rstrip("/"))
 
 CORS(
     app,
     supports_credentials=True,
     resources={
         r"/*": {
-            "origins": [
-                "http://127.0.0.1:5500",
-                "http://localhost:5500",
-                "http://127.0.0.1:5501",
-                "http://localhost:5501",
-                "http://127.0.0.1:5000",
-                "http://localhost:5000",
-                "http://127.0.0.1:8000",
-                "http://localhost:8000",
-                "http://127.0.0.1:3000",
-                "http://localhost:3000",
-                "null"
+            "origins": ALLOWED_CORS_ORIGINS + [
+                re.compile(r"^https?://.*\.onrender\.com$")
             ]
         }
     }
@@ -104,16 +117,308 @@ app.config["FRONTEND_FOLDER"] = FRONTEND_FOLDER
 
 
 # =========================================================
-# DATABASE CONNECTION
+# DATABASE CONNECTION & DUAL COMPATIBILITY ENGINE
+# (MySQL + Auto SQLite Fallback for Cloud/Render Deployment)
 # =========================================================
 
-def get_db_connection():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="evidence_ai"
+SQLITE_DB_PATH = os.path.join(BASE_DIR, "database", "evidence_ai.db")
+
+
+class SQLiteCursorWrapper:
+    def __init__(self, cursor, dictionary=False):
+        self._cursor = cursor
+        self.dictionary = dictionary
+
+    def execute(self, query, params=None):
+        clean_query = query.strip()
+        # Handle SELECT DATABASE()
+        if re.search(r"SELECT\s+DATABASE\(\)", clean_query, re.IGNORECASE):
+            self._cursor.execute("SELECT 'evidence_ai' AS `DATABASE()`")
+            return self
+
+        # Replace MySQL NOW() with CURRENT_TIMESTAMP
+        clean_query = re.sub(r"\bNOW\(\)", "CURRENT_TIMESTAMP", clean_query, flags=re.IGNORECASE)
+
+        # Replace %s with ? for SQLite
+        clean_query = re.sub(r"(?<!%)(%s)", "?", clean_query)
+
+        if params is not None:
+            if isinstance(params, (list, tuple)):
+                self._cursor.execute(clean_query, params)
+            elif isinstance(params, dict):
+                self._cursor.execute(clean_query, params)
+            else:
+                self._cursor.execute(clean_query, (params,))
+        else:
+            self._cursor.execute(clean_query)
+        return self
+
+    def fetchone(self):
+        row = self._cursor.fetchone()
+        if row is None:
+            return None
+        if self.dictionary:
+            cols = [col[0] for col in self._cursor.description]
+            return dict(zip(cols, row))
+        return row
+
+    def fetchall(self):
+        rows = self._cursor.fetchall()
+        if not rows:
+            return []
+        if self.dictionary:
+            cols = [col[0] for col in self._cursor.description]
+            return [dict(zip(cols, row)) for row in rows]
+        return rows
+
+    @property
+    def lastrowid(self):
+        return self._cursor.lastrowid
+
+    @property
+    def rowcount(self):
+        return self._cursor.rowcount
+
+    def close(self):
+        try:
+            self._cursor.close()
+        except Exception:
+            pass
+
+
+class SQLiteConnectionWrapper:
+    def __init__(self, conn):
+        self._conn = conn
+
+    def cursor(self, dictionary=False, **kwargs):
+        cur = self._conn.cursor()
+        return SQLiteCursorWrapper(cur, dictionary=dictionary)
+
+    def commit(self):
+        self._conn.commit()
+
+    def rollback(self):
+        self._conn.rollback()
+
+    def close(self):
+        try:
+            self._conn.close()
+        except Exception:
+            pass
+
+
+def init_sqlite_db_if_needed():
+    """Ensure SQLite database exists with all schema tables and seeded users."""
+    os.makedirs(os.path.dirname(SQLITE_DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS roles (
+        role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        role_name TEXT NOT NULL UNIQUE,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        role_id INTEGER NOT NULL,
+        full_name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        phone TEXT DEFAULT NULL,
+        badge_number TEXT DEFAULT NULL,
+        status TEXT DEFAULT 'Active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS cases (
+        case_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        case_number TEXT NOT NULL UNIQUE,
+        case_title TEXT NOT NULL,
+        description TEXT,
+        crime_type TEXT DEFAULT 'Digital Forensics',
+        incident_date TIMESTAMP DEFAULT NULL,
+        location TEXT DEFAULT NULL,
+        status TEXT DEFAULT 'Open',
+        priority TEXT DEFAULT 'Medium',
+        officer_id INTEGER DEFAULT NULL,
+        created_by INTEGER DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (officer_id) REFERENCES users(user_id) ON DELETE SET NULL,
+        FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS evidence (
+        evidence_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        evidence_number TEXT NOT NULL UNIQUE,
+        case_id INTEGER NOT NULL,
+        file_name TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        file_size INTEGER DEFAULT 0,
+        file_hash TEXT NOT NULL,
+        evidence_type TEXT NOT NULL,
+        description TEXT,
+        source_device TEXT DEFAULT 'Digital Seizure',
+        uploaded_by INTEGER DEFAULT NULL,
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status TEXT DEFAULT 'Stored Securely',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
+        FOREIGN KEY (uploaded_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS ai_analysis (
+        analysis_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        evidence_id INTEGER NOT NULL,
+        analysis_type TEXT NOT NULL,
+        result TEXT,
+        confidence REAL DEFAULT 0,
+        model_name TEXT DEFAULT 'EvidenceAI Multi-Modal',
+        status TEXT DEFAULT 'Completed',
+        analyzed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (evidence_id) REFERENCES evidence(evidence_id) ON DELETE CASCADE
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS chain_of_custody (
+        custody_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        evidence_id INTEGER NOT NULL,
+        action_type TEXT NOT NULL,
+        performed_by INTEGER DEFAULT NULL,
+        action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        notes TEXT,
+        FOREIGN KEY (evidence_id) REFERENCES evidence(evidence_id) ON DELETE CASCADE,
+        FOREIGN KEY (performed_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS activity_logs (
+        log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER DEFAULT NULL,
+        action_type TEXT NOT NULL,
+        module_name TEXT NOT NULL,
+        description TEXT,
+        case_id INTEGER DEFAULT NULL,
+        evidence_id INTEGER DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL,
+        FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE SET NULL,
+        FOREIGN KEY (evidence_id) REFERENCES evidence(evidence_id) ON DELETE SET NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS case_notes (
+        note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        case_id INTEGER NOT NULL,
+        user_id INTEGER DEFAULT NULL,
+        note_text TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS reports (
+        report_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        case_id INTEGER NOT NULL,
+        report_title TEXT NOT NULL,
+        report_type TEXT DEFAULT 'Investigation',
+        file_name TEXT NOT NULL,
+        file_path TEXT NOT NULL,
+        generated_by INTEGER DEFAULT NULL,
+        generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status TEXT DEFAULT 'Generated',
+        FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
+        FOREIGN KEY (generated_by) REFERENCES users(user_id) ON DELETE SET NULL
+    )
+    """)
+
+    roles = [
+        (1, 'Admin', 'Primary System Administrator with full security access'),
+        (2, 'Administrator', 'System Administrator with overall management privileges'),
+        (3, 'Investigator', 'Investigation Officer managing cases, evidence, and custody logs'),
+        (4, 'Forensic Officer', 'Digital Forensic Expert performing analysis and chain-of-custody tracking')
+    ]
+    cur.executemany("INSERT OR IGNORE INTO roles (role_id, role_name, description) VALUES (?, ?, ?)", roles)
+
+    # Seed default users (Password: Admin@123)
+    admin_hash = generate_password_hash("Admin@123")
+    users = [
+        (1, 1, 'Pradnya Sawant', 'pradnyasawant555@gmail.com', admin_hash, '1234567891', 'EAI-ADMIN-01', 'Active'),
+        (2, 2, 'Administrator', 'admin@evidenceai.com', admin_hash, '9876543210', 'EAI-SYS-02', 'Active'),
+        (3, 3, 'Tukaram Munde', 'tukaram.munde@evidenceai.com', admin_hash, '9822012345', 'EAI-INV-03', 'Active'),
+        (4, 4, 'Dr. Sachin Sureshrao Bhosale', 'sachin.bhosale@evidenceai.com', admin_hash, '9890123456', 'EAI-FOR-04', 'Active')
+    ]
+    cur.executemany("INSERT OR IGNORE INTO users (user_id, role_id, full_name, email, password, phone, badge_number, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", users)
+
+    conn.commit()
+    conn.close()
+
+
+def get_db_connection():
+    """
+    Connects to MySQL if configured/available, otherwise seamlessly falls back to SQLite.
+    Guarantees that EvidenceAI runs smoothly on Render, Cloud hosting, and local development.
+    """
+    if os.environ.get("DB_TYPE", "").lower() == "sqlite" or os.environ.get("USE_SQLITE", "").lower() in ("1", "true", "yes"):
+        init_sqlite_db_if_needed()
+        raw_conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False, timeout=15)
+        return SQLiteConnectionWrapper(raw_conn)
+
+    db_host = os.environ.get("MYSQL_HOST") or os.environ.get("DB_HOST")
+    db_user = os.environ.get("MYSQL_USER") or os.environ.get("DB_USER") or "root"
+    db_password = os.environ.get("MYSQL_PASSWORD") or os.environ.get("DB_PASSWORD") or ""
+    db_name = os.environ.get("MYSQL_DATABASE") or os.environ.get("DB_NAME") or "evidence_ai"
+    db_port = int(os.environ.get("MYSQL_PORT") or os.environ.get("DB_PORT") or 3306)
+
+    db_url = os.environ.get("DATABASE_URL")
+    if db_url and ("mysql" in db_url):
+        try:
+            parsed = urlparse(db_url)
+            db_host = parsed.hostname
+            db_user = parsed.username or db_user
+            db_password = parsed.password or db_password
+            db_name = parsed.path.lstrip("/") or db_name
+            db_port = parsed.port or db_port
+        except Exception:
+            pass
+
+    if not db_host:
+        db_host = "localhost"
+
+    try:
+        conn = mysql.connector.connect(
+            host=db_host,
+            user=db_user,
+            password=db_password,
+            database=db_name,
+            port=db_port,
+            connection_timeout=2
+        )
+        return conn
+    except Exception as err:
+        # Fall back to SQLite database
+        init_sqlite_db_if_needed()
+        raw_conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False, timeout=15)
+        return SQLiteConnectionWrapper(raw_conn)
+
 
 
 # =========================================================
@@ -3384,16 +3689,15 @@ def serve_frontend_files(path):
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("EvidenceAI Backend Server")
-    print("Backend URL : http://127.0.0.1:5000")
-    print("Database    : evidence_ai")
-    print("Uploads     :", UPLOAD_FOLDER)
-    print("Reports     :", REPORT_FOLDER)
+    print("EvidenceAI Backend Started")
+    print("Database:", "EvidenceAI")
     print("=" * 60)
 
+    import os
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False,
         use_reloader=False
     )

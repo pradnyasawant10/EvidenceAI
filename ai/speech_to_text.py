@@ -9,16 +9,24 @@ except ImportError:
 
 
 # =====================================================
-# WHISPER MODEL
+# WHISPER MODEL (LAZY LOADING)
 # =====================================================
 
 MODEL_SIZE = "tiny"
+_model = None
 
-model = WhisperModel(
-    MODEL_SIZE,
-    device="cpu",
-    compute_type="int8"
-)
+
+def get_model():
+    """Load Whisper model only when first required to prevent high RAM usage during server startup."""
+    global _model
+    if _model is None:
+        _model = WhisperModel(
+            MODEL_SIZE,
+            device="cpu",
+            compute_type="int8"
+        )
+    return _model
+
 
 VIDEO_EXTENSIONS = (
     ".mp4",
@@ -66,7 +74,8 @@ def transcribe_audio(audio_path):
             pass
 
     try:
-        segments, info = model.transcribe(
+        whisper = get_model()
+        segments, info = whisper.transcribe(
             audio_path,
             beam_size=5
         )

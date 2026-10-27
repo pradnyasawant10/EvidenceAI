@@ -9,12 +9,24 @@ except ImportError:
 
 
 # =====================================================
-# TESSERACT PATH
+# TESSERACT PATH CONFIGURATION
 # =====================================================
 
-TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+WINDOWS_TESSERACT_PATHS = [
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+    r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+    os.path.expanduser(r"~\AppData\Local\Programs\Tesseract-OCR\tesseract.exe")
+]
 
-pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+if os.environ.get("TESSERACT_CMD"):
+    pytesseract.pytesseract.tesseract_cmd = os.environ.get("TESSERACT_CMD")
+else:
+    for candidate_path in WINDOWS_TESSERACT_PATHS:
+        if os.path.exists(candidate_path):
+            pytesseract.pytesseract.tesseract_cmd = candidate_path
+            break
+    # If not on Windows or path not found, pytesseract defaults to 'tesseract' on system PATH
+
 
 DOC_EXTENSIONS = (
     ".txt",

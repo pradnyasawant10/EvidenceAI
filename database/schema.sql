@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS cases (
     location VARCHAR(255) DEFAULT NULL,
     status ENUM('Open', 'Under Investigation', 'Pending Review', 'Closed') DEFAULT 'Open',
     priority ENUM('Low', 'Medium', 'High', 'Critical') DEFAULT 'Medium',
-    lead_officer_id INT DEFAULT NULL,
+    officer_id INT DEFAULT NULL,
     created_by INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (lead_officer_id) REFERENCES users(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (officer_id) REFERENCES users(user_id) ON DELETE SET NULL,
     FOREIGN KEY (created_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS evidence (
     evidence_type VARCHAR(50) NOT NULL,
     description TEXT,
     source_device VARCHAR(255) DEFAULT 'Digital Seizure',
-    collected_by INT DEFAULT NULL,
-    collected_at DATETIME DEFAULT NULL,
+    uploaded_by INT DEFAULT NULL,
+    uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) DEFAULT 'Stored Securely',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
-    FOREIGN KEY (collected_by) REFERENCES users(user_id) ON DELETE SET NULL
+    FOREIGN KEY (uploaded_by) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 -- ---------------------------------------------------------
@@ -151,3 +151,21 @@ CREATE TABLE IF NOT EXISTS case_notes (
     FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
+
+-- ---------------------------------------------------------
+-- 9. REPORTS TABLE
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS reports (
+    report_id INT PRIMARY KEY AUTO_INCREMENT,
+    case_id INT NOT NULL,
+    report_title VARCHAR(255) NOT NULL,
+    report_type VARCHAR(100) DEFAULT 'Investigation',
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    generated_by INT DEFAULT NULL,
+    generated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'Generated',
+    FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE,
+    FOREIGN KEY (generated_by) REFERENCES users(user_id) ON DELETE SET NULL
+);
+

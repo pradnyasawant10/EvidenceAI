@@ -2,7 +2,7 @@
 // EvidenceAI Dashboard JavaScript
 // ===============================
 
-var API_URL = window.API_URL || (window.location.origin.includes(":5000") ? window.location.origin : "http://127.0.0.1:5000");
+var API_URL = window.API_URL || ((window.location.protocol === "file:" || ["5500", "5501", "3000", "8000"].includes(window.location.port)) ? "http://127.0.0.1:5000" : window.location.origin);
 window.API_URL = API_URL;
 
 const menuBtn = document.getElementById("menuBtn");
