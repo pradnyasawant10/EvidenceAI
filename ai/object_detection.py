@@ -4,7 +4,7 @@ import cv2
 
 
 # =====================================================
-# YOLO MODEL
+# YOLO MODEL CONFIGURATION (LAZY LOADING)
 # =====================================================
 
 BASE_DIR = os.path.dirname(
@@ -18,7 +18,24 @@ MODEL_PATH = os.path.join(
     "yolo11n.pt"
 )
 
-model = YOLO(MODEL_PATH)
+# Model is loaded only when object detection is requested.
+model = None
+
+
+def get_model():
+    """Load YOLO model only when first required."""
+    global model
+
+    if model is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(
+                f"YOLO model file not found: {MODEL_PATH}"
+            )
+
+        model = YOLO(MODEL_PATH)
+
+    return model
+
 
 VIDEO_EXTENSIONS = (
     ".mp4",
@@ -38,8 +55,21 @@ VIDEO_EXTENSIONS = (
 # =====================================================
 
 def detect_objects_in_video(video_path):
+    cap = None
+
     try:
+        if not os.path.exists(video_path):
+            return {
+                "success": False,
+                "message": "Video file not found.",
+                "objects": [],
+                "confidence": 0
+            }
+
+        yolo_model = get_model()
+
         cap = cv2.VideoCapture(video_path)
+
         if not cap.isOpened():
             return {
                 "success": False,
@@ -52,8 +82,10 @@ def detect_objects_in_video(video_path):
         fps = cap.get(cv2.CAP_PROP_FPS) or 24.0
         duration = total_frames / fps if fps > 0 else 0
 
-        # Sample approx 1 frame per second (capped at 30 sampled keyframes for responsive speed)
+        # Sample approximately one frame per second.
+        # Limit processing to 30 frames for responsiveness.
         frame_step = max(1, int(fps))
+
         if total_frames > 0 and (total_frames // frame_step) > 30:
             frame_step = max(1, total_frames // 30)
 
@@ -64,18 +96,24 @@ def detect_objects_in_video(video_path):
 
         while cap.isOpened():
             ret, frame = cap.read()
+
             if not ret:
                 break
 
             if frame_idx % frame_step == 0:
                 sampled_frames += 1
-                results = model.predict(source=frame, conf=0.25, verbose=False)
+
+                results = yolo_model.predict(
+                    source=frame,
+                    conf=0.25,
+                    verbose=False
+                )
 
                 if results and results[0].boxes is not None:
                     for box in results[0].boxes:
                         class_id = int(box.cls[0])
                         confidence = float(box.conf[0]) * 100
-                        object_name = model.names[class_id]
+                        object_name = yolo_model.names[class_id]
 
                         if object_name not in all_detected:
                             all_detected[object_name] = {
@@ -85,9 +123,13 @@ def detect_objects_in_video(video_path):
                             }
 
                         all_detected[object_name]["count"] += 1
-                        all_detected[object_name]["confs"].append(confidence)
+                        all_detected[object_name]["confs"].append(
+                            confidence
+                        )
+
                         if confidence > all_detected[object_name]["max_conf"]:
                             all_detected[object_name]["max_conf"] = confidence
+
                         all_confidences.append(confidence)
 
                 if sampled_frames >= 30:
@@ -95,12 +137,13 @@ def detect_objects_in_video(video_path):
 
             frame_idx += 1
 
-        cap.release()
-
         if not all_detected:
             return {
                 "success": True,
-                "message": f"No objects detected across {sampled_frames} video keyframes analyzed.",
+                "message": (
+                    f"No objects detected across "
+                    f"{sampled_frames} video keyframes analyzed."
+                ),
                 "objects": [],
                 "confidence": 0,
                 "is_video": True,
@@ -108,19 +151,33 @@ def detect_objects_in_video(video_path):
             }
 
         detected_objects = []
-        for name, data in sorted(all_detected.items(), key=lambda x: x[1]["max_conf"], reverse=True):
+
+        for name, data in sorted(
+            all_detected.items(),
+            key=lambda item: item[1]["max_conf"],
+            reverse=True
+        ):
             detected_objects.append({
-                "object": f"{name} (detected in {data['count']} frames)",
+                "object": (
+                    f"{name} (detected in {data['count']} frames)"
+                ),
                 "confidence": round(data["max_conf"], 2)
             })
 
-        avg_conf = sum(all_confidences) / len(all_confidences) if all_confidences else 0
+        avg_confidence = (
+            sum(all_confidences) / len(all_confidences)
+            if all_confidences else 0
+        )
 
         return {
             "success": True,
-            "message": f"Video analysis complete: {len(detected_objects)} object type(s) identified across {sampled_frames} keyframes (duration: {duration:.1f}s).",
+            "message": (
+                f"Video analysis complete: {len(detected_objects)} "
+                f"object type(s) identified across {sampled_frames} "
+                f"keyframes (duration: {duration:.1f}s)."
+            ),
             "objects": detected_objects,
-            "confidence": round(avg_conf, 2),
+            "confidence": round(avg_confidence, 2),
             "is_video": True,
             "frames_analyzed": sampled_frames
         }
@@ -132,6 +189,10 @@ def detect_objects_in_video(video_path):
             "objects": [],
             "confidence": 0
         }
+
+    finally:
+        if cap is not None:
+            cap.release()
 
 
 # =====================================================
@@ -147,12 +208,14 @@ def detect_objects(file_path):
             "confidence": 0
         }
 
-    # Route video evidence to video analysis
+    # Route video evidence to video analysis.
     if file_path.lower().endswith(VIDEO_EXTENSIONS):
         return detect_objects_in_video(file_path)
 
     try:
-        results = model.predict(
+        yolo_model = get_model()
+
+        results = yolo_model.predict(
             source=file_path,
             conf=0.25,
             verbose=False
@@ -168,12 +231,13 @@ def detect_objects(file_path):
             for box in result.boxes:
                 class_id = int(box.cls[0])
                 confidence = float(box.conf[0])
-                object_name = model.names[class_id]
+                object_name = yolo_model.names[class_id]
 
                 detected_objects.append({
                     "object": object_name,
                     "confidence": round(confidence * 100, 2)
                 })
+
                 confidence_values.append(confidence)
 
         if not detected_objects:
@@ -204,5 +268,10 @@ def detect_objects(file_path):
         }
 
 
+# =====================================================
+# MAIN
+# =====================================================
+
 if __name__ == "__main__":
     print("Object Detection Module Loaded Successfully (Images & Videos)!")
+    print("YOLO model will load only when detection is requested.")
