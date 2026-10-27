@@ -39,17 +39,31 @@ if BASE_DIR not in sys.path:
 # AI MODULES
 # =========================================================
 
+# Independent, resilient imports so that any single module's failure never disables other modules
+try:
+    from ai.face_detection import detect_faces
+except Exception as error:
+    print("Face Detection import error:", error)
+    detect_faces = None
+
+try:
+    from ai.ocr import extract_text
+except Exception as error:
+    print("OCR import error:", error)
+    extract_text = None
+
 try:
     from ai.object_detection import detect_objects
-    from ai.ocr import extract_text
-    from ai.face_detection import detect_faces
+except Exception as error:
+    print("Object Detection import error:", error)
+    detect_objects = None
+
+try:
     from ai.speech_to_text import transcribe_audio
 except Exception as error:
-    print("AI module import error:", error)
-    detect_objects = None
-    extract_text = None
-    detect_faces = None
+    print("Speech-to-Text import error:", error)
     transcribe_audio = None
+
 
 
 # =========================================================
